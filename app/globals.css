@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* styles.css */
+@layer components {
+  .shimmer-card {
+    @apply relative bg-gray-500 dark:bg-gray-800 overflow-hidden;
+  }
+
+  .shimmer-card::before {
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    content: "";
+  }
+}
