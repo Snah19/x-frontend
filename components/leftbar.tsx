@@ -18,7 +18,7 @@ const getTotalUnreadNotifications = async () => {
     return data;
   }
   catch (error: any) {
-    console.log("Something went wrong:", error.message);
+    console.log("Error in getTotalUnreadNotifications function:", error.message);
   }
 };
 
