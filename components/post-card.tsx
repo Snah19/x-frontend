@@ -193,8 +193,8 @@ const PostCard = ({ post }: { post: Post }) => {
               )}
               <div className="flex flex-wrap w-full rounded-xl border border-gray-500 overflow-hidden">
                 {post?.imgs.map((img, i) => (
-                  <figure className="relative size-64 md:size-96 max-h-96 mx-auto" key={i}>
-                    <Image className="h-auto object-cover" src={img.url} alt="" fill />
+                  <figure className="relative w-full aspect-video" key={i}>
+                    <Image className="object-cover" src={img.url} alt="" fill />
                   </figure>
                 ))}
               </div>
@@ -236,7 +236,6 @@ const PostCard = ({ post }: { post: Post }) => {
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={handleReport}>Report</button>
             </div>
           )}
-
         </div>
       </div>
     </div>
