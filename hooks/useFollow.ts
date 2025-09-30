@@ -8,9 +8,8 @@ const useFollow = () => {
     mutationFn: followUnfollowUser,
     onSuccess: (_data, variables) => {
       Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["profile", variables.username]
-        }),
+        queryClient.invalidateQueries({queryKey: ["profile", variables.username]}),
+        queryClient.invalidateQueries({queryKey: ["currentUser"]}),
       ]);
     },
     onError: (error: any) => {

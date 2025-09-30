@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "@/query-functions";
 import FollowButton from "./follow-button";
 import BackButton from "./back-button";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const FoundedProfile = ({ user }: { user: User }) => {
   const { data: currentUser } = useQuery({
@@ -87,7 +88,9 @@ const FoundedProfile = ({ user }: { user: User }) => {
   return (
     <>
       <div className="sticky top-0 flex items-center gap-x-4 py-1 px-2 border-b border-gray-700 bg-black/50 backdrop-blur-md z-50">
-        <BackButton />
+        <Link className="p-2 rounded-full hover:bg-gray-800" href="/">
+          <IoMdArrowRoundBack className="text-xl" />
+        </Link>
         <div>
           <p className="text-sm font-medium">{user?.fullname}</p>
           <span className="text-xs text-gray-500">4 posts</span>
