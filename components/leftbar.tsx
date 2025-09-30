@@ -41,6 +41,8 @@ const Leftbar = () => {
     }
   }, [data, isLoading]);
 
+  console.log(data);
+
   return (
     <aside className="hidden xs:flex flex-col justify-between max-w-[15.625rem] min-h-screen p-2 border-r border-gray-700">
       <div>

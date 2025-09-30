@@ -1,30 +1,19 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { useState } from "react";
 import { MdMoreHoriz } from "react-icons/md";
-import { logout } from "@/mutation-functions";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import userIcon from "@/public/img/user-icon.jpg";
+import useLogout from "@/hooks/useLogout";
 
 const ProfileButton = ({ username, fullname, imgUrl }: { username: string, fullname: string, imgUrl: string }) => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { mutate } = useMutation({
-    mutationFn: logout,
-    onSuccess: () => {
-      toast.success("Logout successful");
-    },
-    onError: () => {
-      toast.error("Logout failed");
-    }
-  });
+  const { logout } = useLogout();
 
-  const handleLogout = (e: React.FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    mutate();
+  const handleLogout = () => {
+    logout();
     setIsModalOpen(false);
     router.push("/login");
   };

@@ -10,6 +10,8 @@ import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "@/query-functions";
 import userIcon from "@/public/img/user-icon.jpg";
+import useLogout from "@/hooks/useLogout";
+import { useRouter } from "next/navigation";
 
 type MobileSidebarProps = {
   setIsMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,6 +19,8 @@ type MobileSidebarProps = {
 
 const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { logout } = useLogout();
+  const router = useRouter();
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -35,6 +39,11 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <aside className="absolute inset-0 xs:hidden bg-white/10 z-50">
@@ -74,10 +83,10 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
             <span>Profile</span>
           </Link>
 
-          <Link className="flex items-center gap-x-5 mt-auto py-3 px-4 text-xl hover:bg-gray-700" href="#">
+          <button className="flex items-center gap-x-5 mt-auto py-3 px-4 text-xl hover:bg-gray-700" onClick={handleLogout}>
             <FiLogOut className="text-2xl" />
             <span>Logout</span>
-          </Link>
+          </button>
         </div>
 
       </div>
