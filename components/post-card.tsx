@@ -164,18 +164,18 @@ const PostCard = ({ post }: { post: Post }) => {
     <div className="p-4 border-b border-gray-700">
       <div className="flex justify-between items-start w-full">
         <div className="flex items-start gap-x-3 w-full">
-          <Link href={`/profile/${post?.user?.username}?tab=posts`} onClick={(e) => e.stopPropagation()}>
+          <Link href={`/profile/${post?.user?.username}`} onClick={(e) => e.stopPropagation()}>
             <figure className="relative w-10 h-10 rounded-full overflow-hidden">
               <Image className="object-cover" src={post?.user?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
             </figure>
           </Link>
           <div className="w-full">
             <div>
-              <Link className="text-sm leading-none" href={`/profile/${post?.user?.username}`}>{post?.user?.fullname}</Link>
+              <Link className="text-sm leading-none" href={`/profile/${post?.user?.username}`} onClick={(e) => e.stopPropagation()}>{post?.user?.fullname}</Link>
               <span className="text-xs text-gray-500"> · {new Date(`${post?.createdAt}`).toDateString()}</span>
               {isFollowing && <span className="text-xs text-blue-500"> <span className="text-gray-500"> · </span> Following</span>}
             </div>
-            <Link className="text-xs text-gray-500 hover:underline" href={`/profile/${post?.user?.username}`}>@{post?.user?.username}</Link>
+            <Link className="text-xs text-gray-500 hover:underline" href={`/profile/${post?.user?.username}`} onClick={(e) => e.stopPropagation()}>@{post?.user?.username}</Link>
             <article className="space-y-2">
               {isEditing ? (
                 <form className="flex flex-col items-end" onSubmit={e => handleUpdate(e, post?._id)}>

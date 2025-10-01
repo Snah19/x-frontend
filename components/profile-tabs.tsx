@@ -2,14 +2,15 @@
 
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/query-functions";
-import Link from "next/link";
 import axios from "axios";
 import PostCard from "./post-card";
 import { useRouter } from "next/navigation";
 import { Post } from "@/types";
-import { LineWobble } from 'ldrs/react'
-import 'ldrs/react/LineWobble.css';
-import { useEffect, useRef } from "react";
+import { SetStateAction, useEffect, useRef } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+
+import { LineSpinner } from 'ldrs/react';
+import 'ldrs/react/LineSpinner.css';
 
 const getUserPosts = async ({ username, pageParam = 1 }: {username: string, pageParam?: number}) => {
   try {
@@ -51,7 +52,7 @@ const getFavoritePosts = async ({ username, pageParam = 1 }: {username: string, 
   }
 };
 
-const ProfileTabs = ({ username, tab }: { username: string, tab: string }) => {  
+const ProfileTabs = ({ username, tab, setTab }: { username: string; tab: string; setTab: React.Dispatch<SetStateAction<string>>; }) => {  
   const { data: user } = useQuery({
     queryKey: ["profile", username],
     queryFn: () => getProfile(username),
@@ -59,7 +60,7 @@ const ProfileTabs = ({ username, tab }: { username: string, tab: string }) => {
   
   const router = useRouter();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const { data: postsData, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: [tab, username],
     queryFn: ({ pageParam = 1 }) => {
       if (tab === "posts") return getUserPosts({ username, pageParam });
@@ -88,62 +89,60 @@ const ProfileTabs = ({ username, tab }: { username: string, tab: string }) => {
     };
   }, [fetchNextPage, hasNextPage]);
 
+  const posts: Post[] = postsData?.pages.flatMap(page => page.data) ?? [];
+
   return (
     <>
-    {user && (
-      <>
-        <div className="flex justify-between w-full border-b border-gray-700">
-          <Link className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href={`/profile/${username}?tab=posts`}>
-            <span>Posts</span>
-            {tab === "posts" && (
-              <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
-                <span className="opacity-0">Posts</span>
-              </div>
-            )}
-          </Link>
-          <Link className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href={`/profile/${username}?tab=likes`}>
-            <span>Likes</span>
-            {tab === "likes" && (
-              <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
-                <span className="opacity-0">Likes</span>
-              </div>
-            )}
-          </Link>
-          <Link className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href={`/profile/${username}?tab=reposts`}>
-            <span>Reposts</span>
-            {tab === "reposts" && (
-              <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
-                <span className="opacity-0">Reposts</span>
-              </div>
-            )}
-          </Link>
-          <Link className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href={`/profile/${username}?tab=favorite`}>
-            <span>Favorite</span>
-            {tab === "favorite" && (
-              <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
-                <span className="opacity-0">Favorite</span>
-              </div>
-            )}
-          </Link>  
-        </div>
-        <ul className="z-0">
-          {data?.pages?.map((page, i) => (
-            <div key={i}>
-              {page?.data?.map((post: Post) => (
-                <li className="cursor-pointer" key={post?._id} onClick={() => router.push(`/${post?.user?.username}/status/${post?._id}`)}>
-                  <PostCard post={post} />
-                </li>              
+      {user && (
+        <>
+          <div className="flex justify-between w-full border-b border-gray-700">
+            <button className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" onClick={() => setTab("posts")}>
+              <span>Posts</span>
+              {tab === "posts" && (
+                <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
+                  <span className="opacity-0">Posts</span>
+                </div>
+              )}
+            </button>
+            <button className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" onClick={() => setTab("likes")}>
+              <span>Likes</span>
+              {tab === "likes" && (
+                <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
+                  <span className="opacity-0">Likes</span>
+                </div>
+              )}
+            </button>
+            <button className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" onClick={() => setTab("reposts")}>
+              <span>Reposts</span>
+              {tab === "reposts" && (
+                <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
+                  <span className="opacity-0">Reposts</span>
+                </div>
+              )}
+            </button>
+            <button className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" onClick={() => setTab("favorite")}>
+              <span>Favorite</span>
+              {tab === "favorite" && (
+                <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
+                  <span className="opacity-0">Favorite</span>
+                </div>
+              )}
+            </button>  
+          </div>
+
+          <InfiniteScroll dataLength={posts.length} next={fetchNextPage} hasMore={hasNextPage} loader={<div className="my-5 text-center"><LineSpinner size="30" stroke="3" speed="1" color="#3B82F6" /></div>}scrollableTarget="scrollableDiv">
+            <ul className="z-0">
+              {posts.map(post => (
+                <div key={post?._id}>
+                  <li className="cursor-pointer" key={post?._id} onClick={() => router.push(`/${post?.user?.username}/status/${post?._id}`)}>
+                    <PostCard post={post} />
+                  </li>    
+                </div>
               ))}
-            </div>
-          ))}
-        </ul>
-        <div ref={loadMoreRef} className="my-5 text-center">
-          {isFetchingNextPage && (
-            <LineWobble size="40" stroke="2" bgOpacity="0.1" speed="1.75" color="white" />
-          )}
-        </div>
-      </>
-    )}
+            </ul>
+          </InfiniteScroll>
+        </>
+      )}
     </>
   );
 };
