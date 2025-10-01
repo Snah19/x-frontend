@@ -1,6 +1,6 @@
 "use client";
 
-import { getComments, getCurrentUser, getPost } from "@/query-functions";
+import { getComments, getPost } from "@/query-functions";
 import { useQuery } from "@tanstack/react-query";
 import PostCard from "./post-card";
 import BackButton from "./back-button";
@@ -11,12 +11,10 @@ import CommentCard from "./comment-card";
 import { Comment } from "@/types";
 import useComment from "@/hooks/useComment";
 import { useState } from "react";
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 const PostDetail = ({ username, postId }: { username: string; postId: string }) => {
-  const { data: currentUser } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser
-  });
+  const { loggedInUser } = useLoggedInUser();
 
   const { data: post } = useQuery({
     queryKey: ["post", username, postId],
@@ -47,7 +45,7 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
       <div className="">
         <div className="flex gap-x-4 p-4 border-b border-gray-700">
           <figure className="relative size-10 rounded-full overflow-hidden">
-            <Image className="object-cover" src={currentUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
+            <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
           </figure>
           <div className="flex-1 flex items-end gap-x-2">
             <TextareaAutosize className="w-full mb-10 bg-transparent focus:outline-none resize-none" placeholder="Add a comment" minRows={1} maxRows={10} value={content} onChange={(e) => setContent(e.target.value)} />

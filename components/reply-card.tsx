@@ -6,35 +6,32 @@ import { GoHeart } from "react-icons/go";
 import { Comment, Post } from "@/types";
 import userIcon from "@/public/img/user-icon.jpg";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/query-functions";
 import { useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import useLikeComment from "@/hooks/useLikeComment";
 import { TbChevronCompactDown } from "react-icons/tb";
 import { TbChevronCompactUp } from "react-icons/tb";
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 const ReplyCard = ({ reply }: { reply: Comment }) => {
-  const { data: currentUser } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser
-  });
+  const { loggedInUser } = useLoggedInUser();
 
   const [isReplying, setIsReplying] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const { likeComment } = useLikeComment();
 
-  const isFollowing = currentUser?.following?.includes(reply?.from?._id);
+  const isFollowing = loggedInUser?.following?.includes(reply?.from?._id);
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
-    if (currentUser) {
-      setIsLiked(reply?.likes?.includes(currentUser._id));
+    if (loggedInUser) {
+      setIsLiked(reply?.likes?.includes(loggedInUser._id));
       setLikeCount(reply?.likes?.length || 0);
     }
-  }, [reply, currentUser]);
+  }, [reply, loggedInUser]);
 
   const handleLikeComment = (e: React.MouseEvent<HTMLButtonElement>, commentId: string) => {
     e.stopPropagation();

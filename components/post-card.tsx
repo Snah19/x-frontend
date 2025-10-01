@@ -11,7 +11,6 @@ import { FaRegBookmark } from "react-icons/fa6";
 import { Post } from "@/types";
 import userIcon from "@/public/img/user-icon.jpg";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/query-functions";
 import { useEffect, useRef, useState } from "react";
 import useLike from "@/hooks/useLike";
 import useFavorite from "@/hooks/useFavorite";
@@ -23,6 +22,7 @@ import useDeleteComments from "@/hooks/useDeleteComments";
 import useDeletePost from "@/hooks/useDeletePost";
 import TextareaAutosize from "react-textarea-autosize";
 import useUpdatePostText from "@/hooks/useUpdatePostText";
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 const getTotalComments = async (postId: string) => {
   try {
@@ -37,10 +37,7 @@ const getTotalComments = async (postId: string) => {
 };
 
 const PostCard = ({ post }: { post: Post }) => {
-  const { data: currentUser } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser
-  });
+  const { loggedInUser } = useLoggedInUser();
 
   const { data: totalComments } = useQuery({
     queryKey: ["totalComments", post?._id],
@@ -58,7 +55,7 @@ const PostCard = ({ post }: { post: Post }) => {
   const { deletePost } = useDeletePost();
   const { updatePostText } = useUpdatePostText();
 
-  const isFollowing = currentUser?.following?.includes(post?.user?._id);
+  const isFollowing = loggedInUser?.following?.includes(post?.user?._id);
 
   const [isLiked, setIsLiked] = useState(false);
   const [isFav, setIsFav] = useState(false);
@@ -71,18 +68,18 @@ const PostCard = ({ post }: { post: Post }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
-    if (currentUser) {
+    if (loggedInUser) {
       setText(post?.text);
 
-      setIsLiked(post?.likes?.includes(currentUser._id));
-      setIsFav(post?.favorites?.includes(currentUser._id));
-      setIsReposted(post?.reposts?.includes(currentUser._id));
+      setIsLiked(post?.likes?.includes(loggedInUser._id));
+      setIsFav(post?.favorites?.includes(loggedInUser._id));
+      setIsReposted(post?.reposts?.includes(loggedInUser._id));
 
       setLikeCount(post?.likes?.length || 0);
       setFavCount(post?.favorites?.length || 0);
       setRepostCount(post?.reposts?.length || 0);
     }
-  }, [post, currentUser]);
+  }, [post, loggedInUser]);
 
   const handleLike = (e: React.MouseEvent<HTMLButtonElement>, postId: string) => {
     e.stopPropagation();
@@ -225,13 +222,13 @@ const PostCard = ({ post }: { post: Post }) => {
         </div>
         <div className="relative">
           <button className="p-1 rounded-full hover:bg-blue-500/20" onClick={handleOpenModal}><MdMoreHoriz /></button>
-          {((currentUser?.username === post?.user?.username) && isModalOpen) && (
+          {((loggedInUser?.username === post?.user?.username) && isModalOpen) && (
             <div className="absolute top-0 right-8 py-1 rounded-xl ring-1 ring-gray-500 bg-black">
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={e => handleEditing(e, post?.text)}>Edit</button>
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={(e) => handleDelete(e, post)}>Delete</button>
             </div>
           )}
-          {((currentUser?.username !== post?.user?.username) && isModalOpen) && (
+          {((loggedInUser?.username !== post?.user?.username) && isModalOpen) && (
             <div className="absolute top-0 right-8 py-1 rounded-xl ring-1 ring-gray-500 bg-black">
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={handleReport}>Report</button>
             </div>

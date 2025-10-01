@@ -7,10 +7,10 @@ import { FaBell } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import ProfileButton from "./profile-button";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/query-functions";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import axios from "axios";
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 const getTotalUnreadNotifications = async () => {
   try {
@@ -24,11 +24,7 @@ const getTotalUnreadNotifications = async () => {
 
 const Leftbar = () => {
   const router = useRouter();
-  const { data, isLoading } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser,
-    retry: 1
-  });
+  const { loggedInUser, isLoading } = useLoggedInUser();
 
   const { data: notifications } = useQuery({
     queryKey: ["totalUnreadNotifications"],
@@ -36,10 +32,10 @@ const Leftbar = () => {
   });
 
   useEffect(() => {
-    if (!data && !isLoading) {
+    if (!loggedInUser && !isLoading) {
       router.push("/login");
     }
-  }, [data, isLoading]);
+  }, [loggedInUser, isLoading]);
 
   return (
     <aside className="hidden xs:flex flex-col justify-between max-w-[15.625rem] min-h-screen p-2 border-r border-gray-700">
@@ -63,13 +59,13 @@ const Leftbar = () => {
             </div>
             <span className="hidden xl:inline-block">Notifications</span>
           </Link>
-          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${data?.username}?tab=posts`}>
+          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${loggedInUser?.username}?tab=posts`}>
             <FaUser className="text-2xl" />
             <span className="hidden xl:inline-block">Profile</span>
           </Link>
         </div>
       </div>
-      {data && <ProfileButton username={data?.username} fullname={data?.fullname} imgUrl={data?.profileImg?.url} />}
+      {loggedInUser && <ProfileButton username={loggedInUser?.username} fullname={loggedInUser?.fullname} imgUrl={loggedInUser?.profileImg?.url} />}
     </aside>
   );
 };

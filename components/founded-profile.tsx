@@ -12,19 +12,15 @@ import { User } from "@/types";
 import { CiMail } from "react-icons/ci";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import userIcon from "@/public/img/user-icon.jpg";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/query-functions";
 import FollowButton from "./follow-button";
 import BackButton from "./back-button";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 const FoundedProfile = ({ user }: { user: User }) => {
-  const { data: currentUser } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser
-  });
+  const { loggedInUser } = useLoggedInUser();
 
-  const isCurrentUser = currentUser?.username === user?.username;
+  const isCurrentUser = loggedInUser?.username === user?.username;
 
   const [profileImg, setProfileImg] = useState({
     url: user?.profileImg?.url,
@@ -125,7 +121,7 @@ const FoundedProfile = ({ user }: { user: User }) => {
             </div>
           )}
           {!isCurrentUser && (
-            <FollowButton currentUser={currentUser} user={user} />
+            <FollowButton currentUser={loggedInUser} user={user} />
           )}
         </div>
         <div>

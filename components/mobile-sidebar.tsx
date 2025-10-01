@@ -7,11 +7,10 @@ import { FaBell } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrentUser } from "@/query-functions";
 import userIcon from "@/public/img/user-icon.jpg";
 import useLogout from "@/hooks/useLogout";
 import { useRouter } from "next/navigation";
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 type MobileSidebarProps = {
   setIsMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,10 +21,7 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
   const { logout } = useLogout();
   const router = useRouter();
 
-  const { data: user } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser
-  });
+  const { loggedInUser } = useLoggedInUser();
 
   const handleClickOutside = (e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -52,18 +48,18 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
         <div className="pt-4 px-4">
           <button className="mb-2">
             <figure className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image className="object-cover" src={user?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
+              <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
             </figure>
           </button>
-          <Link className="block text-base font-bold" href="#">{user?.fullname}</Link>
-          <p className="mb-2 text-sm text-gray-500">@{user?.username}</p>
+          <Link className="block text-base font-bold" href="#">{loggedInUser?.fullname}</Link>
+          <p className="mb-2 text-sm text-gray-500">@{loggedInUser?.username}</p>
         <div className="mb-4 space-x-4">
           <Link className="space-x-2 text-sm hover:underline" href="#">
-            {user?.following?.length}
+            {loggedInUser?.following?.length}
             <span className="text-gray-500"> Following</span>
           </Link>
           <Link className="space-x-2 text-sm hover:underline" href="#">
-            {user?.followers?.length}
+            {loggedInUser?.followers?.length}
             <span className="text-gray-500"> Followers</span>
           </Link>
         </div>
@@ -78,7 +74,7 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
             <FaBell className="text-2xl"/>
             <span>Notifications</span>
           </Link>
-          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${user?.username}`}>
+          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${loggedInUser?.username}`}>
             <FaUser className="text-2xl"/>
             <span>Profile</span>
           </Link>

@@ -1,15 +1,5 @@
 import axios from "axios";
 
-export const getCurrentUser = async () => {
-  try {
-      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/current-user`, { withCredentials: true });
-      return data;
-  }
-  catch (error: any) {
-    throw { message: error.response?.data?.message };
-  }
-};
-
 export const getProfile = async (username: string) => {
   try {
     const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/profile/${username}`);

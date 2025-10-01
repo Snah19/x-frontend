@@ -1,13 +1,13 @@
 "use client";
 
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import NotificationCard from "./notification-card";
-import { getCurrentUser } from "@/query-functions";
 import { Notification } from "@/types";
 import axios from "axios";
 import { useEffect, useRef } from "react";
 import { LineWobble } from 'ldrs/react';
 import 'ldrs/react/LineWobble.css';
+import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 const getNotifications = async ({ type, pageParam } :{type: string, pageParam: number}) => {
   try {
@@ -20,13 +20,10 @@ const getNotifications = async ({ type, pageParam } :{type: string, pageParam: n
 };
 
 const NotificationList = ({ type }: { type: string }) => {
-  const { data: currentUser } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser
-  });
+  const { loggedInUser } = useLoggedInUser();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["notifications", currentUser?.username, type],
+    queryKey: ["notifications", loggedInUser?.username, type],
     queryFn: ({ pageParam = 1 }) => getNotifications({ type, pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
     initialPageParam: 1,
