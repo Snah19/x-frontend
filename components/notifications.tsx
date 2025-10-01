@@ -3,11 +3,13 @@
 import { useScrollStore } from "@/providers/scroll-provider";
 import NotificationList from "./notification-list";
 import NotificationTopbar from "./notification-topbar";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const Notifications = ({ type }: { type: string }) => {
+const Notifications = () => {
   const scrollStore = useScrollStore();
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const [type, setType] = useState("all");
 
   useEffect(() => {
     const key = `/${type}`;
@@ -24,10 +26,9 @@ const Notifications = ({ type }: { type: string }) => {
     }
   };
 
-
   return (
     <main className="flex-1 h-screen xs:border-r border-gray-700 overflow-auto hide-scrollbar" onScroll={handleScroll} ref={containerRef}>
-      <NotificationTopbar type={type} />
+      <NotificationTopbar type={type} setType={setType} />
       <NotificationList type={type} />
     </main>
   );

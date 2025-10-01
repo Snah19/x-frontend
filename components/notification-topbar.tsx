@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { FaComment, FaRegBookmark, FaUserFriends } from "react-icons/fa";
 import { GoHeart } from "react-icons/go";
 import { BiRepost } from "react-icons/bi";
-import { IoMdArrowRoundBack } from "react-icons/io";
+import BackButton from "./back-button";
 
 const getTotalUnreadNotifications = async () => {
   try {
@@ -18,7 +17,7 @@ const getTotalUnreadNotifications = async () => {
   }
 };
 
-const NotificationTopbar = ({ type }: { type: string }) => {
+const NotificationTopbar = ({ type, setType }: { type: string; setType: React.Dispatch<React.SetStateAction<string>>; }) => {
   const { data: notifications } = useQuery({
     queryKey: ["totalUnreadNotifications"],
     queryFn: getTotalUnreadNotifications,
@@ -27,20 +26,18 @@ const NotificationTopbar = ({ type }: { type: string }) => {
   return (
     <div className="sticky top-0 py-1 px-2 border-b border-gray-700 bg-black/50 backdrop-blur-md z-50">
       <div className="flex items-center gap-x-4">
-        <Link className="p-2 rounded-full hover:bg-gray-800" href="/">
-          <IoMdArrowRoundBack className="text-xl" />
-        </Link>
+      <BackButton />
         <div className="flex justify-between w-full">
-          <Link className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" href="/notifications?type=all">
+          <button className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" onClick={() => setType("all")}>
             <span>All</span>
             {type === "all" && (
               <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
                 <span className="opacity-0">All</span>
               </div>
             )}
-          </Link>
+          </button>
 
-          <Link className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" href="/notifications?type=follow">
+          <button className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" onClick={() => setType("follow")}>
             <span className="hidden md:inline">Follows</span>
             <FaUserFriends className="inline md:hidden text-2xl text-white" />
             {notifications && notifications?.follows !== 0 && (
@@ -54,9 +51,9 @@ const NotificationTopbar = ({ type }: { type: string }) => {
                 <FaUserFriends className="inline md:hidden opacity-0 text-2xl text-white" />
               </div>
             )}
-          </Link>
+          </button>
 
-          <Link className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" href="/notifications?type=like">
+          <button className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" onClick={() => setType("like")}>
             <span className="hidden md:inline">Likes</span>
             <GoHeart className="inline md:hidden text-2xl text-white" />
             {notifications && notifications?.likes !== 0 && (
@@ -70,8 +67,8 @@ const NotificationTopbar = ({ type }: { type: string }) => {
                 <GoHeart className="inline md:hidden opacity-0 text-2xl text-white" />
               </div>
             )}
-          </Link>
-          <Link className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" href="/notifications?type=comment">
+          </button>
+          <button className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" onClick={() => setType("comment")}>
             <span className="hidden md:inline">Comments</span>
             <FaComment className="inline md:hidden text-2xl text-white" />
             {notifications && notifications?.comments !== 0 && (
@@ -85,8 +82,8 @@ const NotificationTopbar = ({ type }: { type: string }) => {
                 <FaComment className="inline md:hidden opacity-0 text-2xl text-white" />
               </div>
             )}
-          </Link>
-          <Link className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" href="/notifications?type=repost">
+          </button>
+          <button className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" onClick={() => setType("repost")}>
             <span className="hidden md:inline">Reposts</span>
             <BiRepost className="inline md:hidden text-2xl text-white" />
             {notifications && notifications?.reposts !== 0 && (
@@ -100,8 +97,8 @@ const NotificationTopbar = ({ type }: { type: string }) => {
                 <BiRepost className="inline md:hidden opacity-0 text-2xl text-white" />
               </div>
             )}
-          </Link>
-          <Link className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" href="/notifications?type=favorite">
+          </button>
+          <button className="relative flex-1 flex justify-center items-center py-3 text-sm font-bold hover:bg-gray-800" onClick={() => setType("favorite")}>
             <span className="hidden md:inline">Favorites</span>
             <FaRegBookmark className="inline md:hidden text-2xl text-white" />
             {notifications && notifications?.favorites !== 0 && (
@@ -115,7 +112,7 @@ const NotificationTopbar = ({ type }: { type: string }) => {
                 <FaRegBookmark className="inline md:hidden opacity-0 text-2xl text-white" />
               </div>
             )}
-          </Link>
+          </button>
         </div>
       </div>
       <div>

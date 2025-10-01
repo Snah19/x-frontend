@@ -55,7 +55,7 @@ const Home = ({ feed }: { feed: string }) => {
     initialPageParam: 1,
   });
 
-  const posts: Post[] = postsData?.pages.flatMap((page) => page.data) ?? [];
+  const posts: Post[] = postsData?.pages.flatMap(page => page.data) ?? [];
 
   return (
     <main className="flex-1 h-screen xs:border-r border-gray-700 overflow-auto hide-scrollbar" ref={containerRef} onScroll={handleStoreScrollPositions} id="scrollableDiv">
@@ -69,7 +69,7 @@ const Home = ({ feed }: { feed: string }) => {
           </div>
         ) : (
           <ul className="z-0">
-            {posts.map((post) => (
+            {posts.map((post: Post) => (
               <li className="cursor-pointer" key={post._id} onClick={() => router.push(`/${post.user.username}/status/${post._id}`)}>
                 <PostCard post={post} />
               </li>

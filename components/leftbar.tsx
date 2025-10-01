@@ -48,7 +48,7 @@ const Leftbar = () => {
             <GoHomeFill className="text-2xl" />
             <span className="hidden xl:inline-block">Home</span>
           </a>
-          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href="/notifications?type=all">
+          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href="/notifications">
             <div className="relative">
               <FaBell className="text-2xl" />
               {notifications && notifications?.all !== 0 && (
