@@ -1,6 +1,16 @@
-import { favUnfavPost } from "@/mutation-functions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import toast from "react-hot-toast";
+
+const favUnfavPost = async ({ userId, postId }: { userId: string , postId: string }) => {
+  try {
+    const { data } = await axios.patch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/favorite/${postId}`, { userId });
+    return data;   
+  }
+  catch (error: any) {
+    throw { message: error.response?.data?.message, field: error.response?.data?.field};
+  }
+};
 
 const useFavorite = () => {
   const queryClient = useQueryClient();
@@ -15,7 +25,6 @@ const useFavorite = () => {
           queryKey: ["following"]
         }),
       ]);
-      toast.success("Added to favorite");
     },
     onError: (error: any) => {
       toast.error(error.message);

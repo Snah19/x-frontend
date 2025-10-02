@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const createPostFn = async (post: Partial<Post>) => {
+const createPostFn = async ({ userId, post } :{userId: string, post: Partial<Post>}) => {
   try {
-    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/create`, post, { withCredentials: true });
+    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/create/${userId}`, post);
     return data;
   }
   catch (error: any) {
@@ -23,7 +23,7 @@ const useCreatePost = () => {
           queryKey: ["for-you"]
         })
       ]);
-      toast.success("Posted");
+      toast("Posted");
     },
     onError: (error: any) => {
       toast.error(error.message);

@@ -6,15 +6,13 @@ import { GoHomeFill } from "react-icons/go";
 import { FaBell } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import ProfileButton from "./profile-button";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import axios from "axios";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
+import useTotalNotifications from "@/hooks/useTotalNotifications";
 
-const getTotalUnreadNotifications = async () => {
+const getTotalUnreadNotifications = async (userId: string) => {
   try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/total`, { withCredentials: true });
+    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/total/${userId}`);
     return data;
   }
   catch (error: any) {
@@ -23,19 +21,8 @@ const getTotalUnreadNotifications = async () => {
 };
 
 const Leftbar = () => {
-  const router = useRouter();
-  const { loggedInUser, isLoading } = useLoggedInUser();
-
-  const { data: notifications } = useQuery({
-    queryKey: ["totalUnreadNotifications"],
-    queryFn: getTotalUnreadNotifications,
-  });
-
-  useEffect(() => {
-    if (!loggedInUser && !isLoading) {
-      router.push("/login");
-    }
-  }, [loggedInUser, isLoading]);
+  const { sessionUser } = useSessionUser();
+  const notifications = useTotalNotifications();
 
   return (
     <aside className="hidden xs:flex flex-col justify-between max-w-[15.625rem] min-h-screen p-2 border-r border-gray-700">
@@ -59,13 +46,13 @@ const Leftbar = () => {
             </div>
             <span className="hidden xl:inline-block">Notifications</span>
           </Link>
-          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${loggedInUser?.username}?tab=posts`}>
+          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${sessionUser?.username}?tab=posts`}>
             <FaUser className="text-2xl" />
             <span className="hidden xl:inline-block">Profile</span>
           </Link>
         </div>
       </div>
-      {loggedInUser && <ProfileButton username={loggedInUser?.username} fullname={loggedInUser?.fullname} imgUrl={loggedInUser?.profileImg?.url} />}
+      {sessionUser && <ProfileButton username={sessionUser?.username} fullname={sessionUser?.fullname} imgUrl={sessionUser?.profileImg?.url} />}
     </aside>
   );
 };

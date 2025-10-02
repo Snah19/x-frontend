@@ -10,16 +10,6 @@ export const getProfile = async (username: string) => {
   }
 };
 
-export const getSuggestedUsers = async () => {
-  try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/suggested`, { withCredentials: true });
-    return data;
-  }
-  catch (error: any) {
-    throw { message: error.response?.data?.message };
-  }
-};
-
 export const getUserPosts = async (username: string) => {
   try {
     const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/user/${username}`);
@@ -53,16 +43,6 @@ export const getFavoritePosts = async (username: string) => {
 export const getRepostedPosts = async (username: string) => {
   try {
     const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/posts/repost/${username}`);
-    return data;
-  }
-  catch (error: any) {
-    throw { message: error.response?.data?.message };
-  }
-};
-
-export const getNotifications = async (type: string) => {
-  try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications?type=${type}`, { withCredentials: true });
     return data;
   }
   catch (error: any) {

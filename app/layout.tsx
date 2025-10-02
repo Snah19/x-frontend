@@ -4,6 +4,7 @@ import { poppins } from "@/fonts";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import { ScrollProvider } from "@/providers/scroll-provider";
 import { Toaster } from "react-hot-toast";
+import { NextAuthProvider } from "@/providers/next-auth-provider";
 
 export const metadata: Metadata = {
   title: "X",
@@ -15,11 +16,13 @@ const RootLayout = ({ children }: Readonly<{children: React.ReactNode;}>) => {
     <ReactQueryProvider>
       <html lang="en">
         <body className={`${poppins.className} bg-black text-white`}>
-          <ScrollProvider>
-            <div className="flex md:gap-x-2 items-center max-w-[81.25rem] mx-auto">
-              {children}
-            </div>
-          </ScrollProvider>
+          <NextAuthProvider>
+            <ScrollProvider>
+              <div className="flex md:gap-x-2 items-center max-w-[81.25rem] mx-auto">
+                {children}
+              </div>
+            </ScrollProvider>
+          </NextAuthProvider>
         </body>
       </html>
       <Toaster toastOptions={{ style: { width: "auto", maxWidth: "100%"}} }/>

@@ -1,27 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { FaComment, FaRegBookmark, FaUserFriends } from "react-icons/fa";
 import { GoHeart } from "react-icons/go";
 import { BiRepost } from "react-icons/bi";
 import BackButton from "./back-button";
-
-const getTotalUnreadNotifications = async () => {
-  try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/total`, { withCredentials: true });
-    return data;
-  }
-  catch (error: any) {
-    console.log("Something went wrong:", error.message);
-  }
-};
+import useTotalNotifications from "@/hooks/useTotalNotifications";
 
 const NotificationTopbar = ({ type, setType }: { type: string; setType: React.Dispatch<React.SetStateAction<string>>; }) => {
-  const { data: notifications } = useQuery({
-    queryKey: ["totalUnreadNotifications"],
-    queryFn: getTotalUnreadNotifications,
-  });
+  const notifications = useTotalNotifications();
 
   return (
     <div className="sticky top-0 py-1 px-2 border-b border-gray-700 bg-black/50 backdrop-blur-md z-50">

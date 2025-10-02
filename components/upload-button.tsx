@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { deleteImgFromCloudinary, uploadImgToCloudinary } from "@/actions/cloundinary-actions";
-import { updateProfileImgs } from "@/mutation-functions";
-import { useMutation } from "@tanstack/react-query";
+import { updateProfile } from "@/mutation-functions";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import useSessionUser from "@/hooks/useSessionUser";
 
 type Img = {
   url: string; 
@@ -12,11 +13,14 @@ type Img = {
 };
 
 const UploadButton = ({profileImg, coverImg, setProfileImg, setCoverImg, setUpdateBtnVisible }: { profileImg: Img, coverImg: Img , setProfileImg: Dispatch<SetStateAction<Img>>, setCoverImg: Dispatch<SetStateAction<Img>>, setUpdateBtnVisible: Dispatch<SetStateAction<boolean>> }) => {
-  const { mutate } = useMutation({
-    mutationFn: updateProfileImgs,
+  const { sessionUser } = useSessionUser();
+  const queryClient = useQueryClient();
+  const { mutate: updatePfImgs } = useMutation({
+    mutationFn: updateProfile,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile", sessionUser?.username] });
       setUpdateBtnVisible(false);
-      toast.success("Uploaded");
+      toast("Uploaded");
     }
   });
 
@@ -30,7 +34,8 @@ const UploadButton = ({profileImg, coverImg, setProfileImg, setCoverImg, setUpda
       
       const uploadedProfileImg = await uploadImgToCloudinary(profileImg?.base64);
       const uploadedCoverImg = await uploadImgToCloudinary(coverImg?.base64);
-      mutate({ profileImg: uploadedProfileImg, coverImg: uploadedCoverImg });
+
+      updatePfImgs({ userId: sessionUser?._id, user: { profileImg: uploadedProfileImg, coverImg: uploadedCoverImg } });
       setProfileImg(curr => ({ ...curr, isNew: false }));
       setCoverImg(curr => ({ ...curr, isNew: false }));
     }
@@ -38,14 +43,14 @@ const UploadButton = ({profileImg, coverImg, setProfileImg, setCoverImg, setUpda
       await deleteImgFromCloudinary(profileImg?.publicId);
 
       const uploadedProfileImg = await uploadImgToCloudinary(profileImg?.base64);
-      mutate({ profileImg: uploadedProfileImg });
+      updatePfImgs({ userId: sessionUser?._id, user: { profileImg: uploadedProfileImg } });
       setProfileImg(curr => ({ ...curr, isNew: false }));
     }
     else if (coverImg?.isNew) {
       await deleteImgFromCloudinary(coverImg?.publicId);
 
       const uploadedCoverImg = await uploadImgToCloudinary(coverImg?.base64);
-      mutate({ coverImg: uploadedCoverImg });
+      updatePfImgs({ userId: sessionUser?._id ,user: {coverImg: uploadedCoverImg }});
       setCoverImg(curr => ({ ...curr, isNew: false }));
     }
   };

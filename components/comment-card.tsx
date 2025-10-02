@@ -14,10 +14,11 @@ import { TbChevronCompactDown } from "react-icons/tb";
 import { TbChevronCompactUp } from "react-icons/tb";
 import ReplyCard from "./reply-card";
 import useReplyComment from "@/hooks/useReplyComment";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
+
 
 const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
 
   const { data: replies } = useQuery({
     queryKey: ["replies", comment?._id],
@@ -30,21 +31,21 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
   const { likeComment } = useLikeComment();
   const { reply } = useReplyComment();
 
-  const isFollowing = loggedInUser?.following?.includes(comment?.from?._id);
+  const isFollowing = sessionUser?.following?.includes(comment?.from?._id);
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
-    if (loggedInUser) {
-      setIsLiked(comment?.likes?.includes(loggedInUser._id));
+    if (sessionUser) {
+      setIsLiked(comment?.likes?.includes(sessionUser._id));
       setLikeCount(comment?.likes?.length || 0);
     }
-  }, [post, loggedInUser]);
+  }, [post, sessionUser]);
 
   const handleLikeComment = (e: React.MouseEvent<HTMLButtonElement>, commentId: string) => {
     e.stopPropagation();
-    likeComment({ commentId });
+    likeComment({ userId: sessionUser?._id, commentId });
     setIsLiked(curr => !curr);
     setLikeCount(curr => isLiked ? curr - 1 : curr + 1);
   };
@@ -72,7 +73,7 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
   const [showReplies, setShowReplies] = useState(false);
 
   const handleReplyComment = (commentId: string) => {
-    reply({ commentId , content });
+    reply({ userId: sessionUser?._id, commentId , content });
     setContent("");
     setIsReplying(curr => !curr);
     setShowReplies(true);
@@ -106,7 +107,7 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
             {isReplying && (
               <div className="flex gap-x-4 transition-all duration-200 ease-out transform animate-fadeIn">
                 <figure className="relative w-6 h-6 rounded-full overflow-hidden">
-                  <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={24} height={24} />
+                  <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={24} height={24} />
                 </figure>
                 <div className="flex items-end w-full pb-5 border-b border-gray-700">
                   <TextareaAutosize className="w-full bg-transparent focus:outline-none resize-none" placeholder="Add a reply" minRows={1} maxRows={10} ref={textareaRef} value={content} onChange={e => setContent(e.target.value)} />

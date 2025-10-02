@@ -8,7 +8,7 @@ import MobileSidebar from "./mobile-sidebar";
 import userIcon from "@/public/img/user-icon.jpg";
 import { User } from "@/types";
 
-const Topbar = ({ loggedInUser, feed } : { loggedInUser: User, feed: string }) => {
+const Topbar = ({ sessionUser, feed } : { sessionUser: User, feed: string }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
@@ -20,7 +20,7 @@ const Topbar = ({ loggedInUser, feed } : { loggedInUser: User, feed: string }) =
           <div className="flex xs:hidden justify-between items-center pt-4 px-4">
             <button onClick={() => setIsMobileSidebarOpen(curr => !curr)}>
               <figure className="relative w-8 h-8 rounded-full overflow-hidden">
-                <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={32} height={32} />
+                <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={32} height={32} />
               </figure>
             </button>
             <Link href="/" className="transform -translate-x-1/2">

@@ -1,48 +1,41 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import { LiaEyeSolid } from "react-icons/lia";
 import { LiaEyeSlashSolid } from "react-icons/lia";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-
-const login = async ({ username, password }: { username: string; password: string }) => {
-  try {
-    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`, { username, password }, { withCredentials: true });
-    return data;
-  } catch (error: any) {
-    throw { message: error.response?.data?.message };
-  }
-};
+import { signIn } from "next-auth/react";
 
 const LoginForm = () => {
   const [visiblePW, setVisiblePW] = useState<boolean>(false);
   const router = useRouter();
-  const { mutate, isError, error } = useMutation({
-    mutationFn: login
-  });
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const user = {
-      username: formData.get("username") as string,
-      password: formData.get("password") as string,
-    };
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
 
-    mutate(user, {
-      onSuccess: () => {
-        form.reset();
-        toast.success("Account logged in successfully!");
-        router.push("/");
+    try {
+      const res = await signIn("credentials", {
+        username, password, redirect: false, callbackUrl: "/"
+      });
+
+      if (res?.error) {
+        setError("Invalid credentials");
+        return;
       }
-    });
+
+      router.replace("/");
+    }
+    catch (error: any) {
+      console.log("Error logging in user:", error);
+    }
   };
   
   return (
@@ -59,7 +52,7 @@ const LoginForm = () => {
         </div>
         <button className="w-full py-2 text-lg rounded-full bg-blue-400 hover:bg-blue-500" type="submit">Login</button>
       </form>
-      {isError && <p className="text-xs text-red-500">{error?.message}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </>
   );
 };

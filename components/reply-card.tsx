@@ -11,31 +11,31 @@ import TextareaAutosize from "react-textarea-autosize";
 import useLikeComment from "@/hooks/useLikeComment";
 import { TbChevronCompactDown } from "react-icons/tb";
 import { TbChevronCompactUp } from "react-icons/tb";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
 
 const ReplyCard = ({ reply }: { reply: Comment }) => {
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
 
   const [isReplying, setIsReplying] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const { likeComment } = useLikeComment();
 
-  const isFollowing = loggedInUser?.following?.includes(reply?.from?._id);
+  const isFollowing = sessionUser?.following?.includes(reply?.from?._id);
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
-    if (loggedInUser) {
-      setIsLiked(reply?.likes?.includes(loggedInUser._id));
+    if (sessionUser) {
+      setIsLiked(reply?.likes?.includes(sessionUser._id));
       setLikeCount(reply?.likes?.length || 0);
     }
-  }, [reply, loggedInUser]);
+  }, [reply, sessionUser]);
 
   const handleLikeComment = (e: React.MouseEvent<HTMLButtonElement>, commentId: string) => {
     e.stopPropagation();
-    likeComment({ commentId });
+    likeComment({ userId: sessionUser?._id, commentId });
     setIsLiked(curr => !curr);
     setLikeCount(curr => isLiked ? curr - 1 : curr + 1);
   };

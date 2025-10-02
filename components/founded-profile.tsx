@@ -15,12 +15,12 @@ import userIcon from "@/public/img/user-icon.jpg";
 import FollowButton from "./follow-button";
 import BackButton from "./back-button";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
 
 const FoundedProfile = ({ user }: { user: User }) => {
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
 
-  const isCurrentUser = loggedInUser?.username === user?.username;
+  const isCurrentUser = sessionUser?.username === user?.username;
 
   const [profileImg, setProfileImg] = useState({
     url: user?.profileImg?.url,
@@ -121,7 +121,7 @@ const FoundedProfile = ({ user }: { user: User }) => {
             </div>
           )}
           {!isCurrentUser && (
-            <FollowButton currentUser={loggedInUser} user={user} />
+            <FollowButton sessionUser={sessionUser} user={user} />
           )}
         </div>
         <div>

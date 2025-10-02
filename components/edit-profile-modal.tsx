@@ -1,6 +1,7 @@
 "use client";
 
-import { updateProfileImgs } from "@/mutation-functions";
+import useSessionUser from "@/hooks/useSessionUser";
+import { updateProfile } from "@/mutation-functions";
 import { User } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ const EditProfileModal = ({ user, setIsModalOpen }: {user: User, setIsModalOpen:
   const queryClient = useQueryClient();
   const modelRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { sessionUser } = useSessionUser();
 
   const handleClickOutside = (e: MouseEvent) => {
     if (modelRef.current && !modelRef.current.contains(e.target as Node)) {
@@ -25,12 +27,12 @@ const EditProfileModal = ({ user, setIsModalOpen }: {user: User, setIsModalOpen:
     };
   }, []);
 
-  const { mutate } = useMutation({
-    mutationFn: updateProfileImgs,
+  const { mutate: updatePfInfo } = useMutation({
+    mutationFn: updateProfile,
     onSuccess: () => {
-      toast.success("User info updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", sessionUser?.username] });
       setIsModalOpen(false);
+      toast("Updated");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -42,18 +44,16 @@ const EditProfileModal = ({ user, setIsModalOpen }: {user: User, setIsModalOpen:
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const userInfo = {
-      username: formData.get("username") as string,
-      fullname: formData.get("fullname") as string,
-      email: formData.get("email") as string,
-      link: formData.get("link") as string,
-      bio: formData.get("bio") as string,
-      currentPassword: formData.get("current-password") as string,
-      newPassword: formData.get("new-password") as string,
-    
-    }
-    mutate(userInfo);
-    router.push(`/profile/${userInfo.username}`);
+    const username = formData.get("username") as string;
+    const fullname = formData.get("fullname") as string;
+    const email = formData.get("email") as string;
+    const link = formData.get("link") as string;
+    const bio = formData.get("bio") as string;
+    const currentPassword = formData.get("current-password") as string;
+    const newPassword = formData.get("new-password") as string;
+
+    updatePfInfo({ userId: sessionUser?._id ,user: { username, fullname, email, link, bio, currentPassword, newPassword } });
+    router.replace(`/profile/${username}`);
   };
 
   return (

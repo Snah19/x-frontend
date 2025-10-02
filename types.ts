@@ -2,6 +2,8 @@ export type User = {
   _id: string;
   username: string;
   email: string;
+  currentPassword: string;
+  newPassword: string;
   password: string;
   fullname: string;
   profileImg: {

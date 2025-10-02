@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 import userIcon from "@/public/img/user-icon.jpg";
 import useLogout from "@/hooks/useLogout";
 import { useRouter } from "next/navigation";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
 
 type MobileSidebarProps = {
   setIsMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +21,7 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
   const { logout } = useLogout();
   const router = useRouter();
 
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
 
   const handleClickOutside = (e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -48,18 +48,18 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
         <div className="pt-4 px-4">
           <button className="mb-2">
             <figure className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
+              <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
             </figure>
           </button>
-          <Link className="block text-base font-bold" href="#">{loggedInUser?.fullname}</Link>
-          <p className="mb-2 text-sm text-gray-500">@{loggedInUser?.username}</p>
+          <Link className="block text-base font-bold" href="#">{sessionUser?.fullname}</Link>
+          <p className="mb-2 text-sm text-gray-500">@{sessionUser?.username}</p>
         <div className="mb-4 space-x-4">
           <Link className="space-x-2 text-sm hover:underline" href="#">
-            {loggedInUser?.following?.length}
+            {sessionUser?.following?.length}
             <span className="text-gray-500"> Following</span>
           </Link>
           <Link className="space-x-2 text-sm hover:underline" href="#">
-            {loggedInUser?.followers?.length}
+            {sessionUser?.followers?.length}
             <span className="text-gray-500"> Followers</span>
           </Link>
         </div>
@@ -74,7 +74,7 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
             <FaBell className="text-2xl"/>
             <span>Notifications</span>
           </Link>
-          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${loggedInUser?.username}`}>
+          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
             <FaUser className="text-2xl"/>
             <span>Profile</span>
           </Link>

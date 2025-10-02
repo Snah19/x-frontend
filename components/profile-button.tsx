@@ -3,23 +3,19 @@
 import Image from "next/image";
 import { useState } from "react";
 import { MdMoreHoriz } from "react-icons/md";
-import { useRouter } from "next/navigation";
 import userIcon from "@/public/img/user-icon.jpg";
-import useLogout from "@/hooks/useLogout";
+import { signOut } from "next-auth/react";
 
 const ProfileButton = ({ username, fullname, imgUrl }: { username: string, fullname: string, imgUrl: string }) => {
-  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { logout } = useLogout();
 
   const handleLogout = () => {
-    logout();
+    signOut();
     setIsModalOpen(false);
-    router.push("/login");
   };
 
   return (
-    <div className="relative hidden md:block">
+    <div className="relative hidden xs:block">
       <button className="flex items-center gap-x-2 w-full mx-auto xl:mx-0 xl:p-2 rounded-full xl:hover:bg-gray-700" onClick={() => setIsModalOpen(curr => !curr)}>
         <figure className="relative size-10 rounded-full overflow-hidden">
           <Image className="object-cover" src={imgUrl || userIcon.src} alt="" width={40} height={40} />

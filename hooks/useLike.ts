@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const likeUnlikePost = async ({ postId }: { postId: string }) => {
+const likeUnlikePost = async ({ userId, postId }: { userId: string, postId: string }) => {
   try {
-    const { data } = await axios.patch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/like/${postId}`, {  }, { withCredentials: true });
+    const { data } = await axios.patch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/like/${postId}`, { userId });
     return data;
   }
   catch (error: any) {

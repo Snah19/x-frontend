@@ -4,15 +4,15 @@ import useFollow from "@/hooks/useFollow";
 import { User } from "@/types";
 import { useEffect, useState } from "react";
 
-const FollowButton = ({ currentUser, user }: { currentUser: User, user: User }) => {
+const FollowButton = ({ sessionUser, user }: { sessionUser: User, user: User }) => {
   const [following, setFollowing] = useState(false);
   const { follow } = useFollow();
   useEffect(() => {
-    setFollowing(currentUser?.following?.includes(user?._id));
-  }, [currentUser]);
+    setFollowing(sessionUser?.following?.includes(user?._id));
+  }, [sessionUser]);
 
   const handleFollow = (username: string) => {
-    follow({ username });
+    follow({ userId: sessionUser?._id, username });
     setFollowing(curr => !curr);
   };
 

@@ -4,15 +4,17 @@ import Image from "next/image";
 import userIcon from "@/public/img/user-icon.jpg";
 import useFollow from "@/hooks/useFollow";
 import { useState } from "react";
+import useSessionUser from "@/hooks/useSessionUser";
 
 
 const SuggestedUser = ({ user }: { user: User }) => {
   const [isFollowing, setIsFollowing] = useState(false);
+  const { sessionUser } = useSessionUser();
   
   const { follow } = useFollow();
   const handleFollow = (e: React.MouseEvent<HTMLButtonElement>, userId: string) => {
     e.preventDefault();
-    follow({ username: user?.username });
+    follow({ userId: sessionUser?._id, username: user?.username });
     setIsFollowing(curr => !curr);
   };
   

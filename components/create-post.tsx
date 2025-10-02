@@ -19,7 +19,7 @@ const convertFileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-const CreatePost = ({ loggedInUser }: { loggedInUser: User }) => {
+const CreatePost = ({ sessionUser }: { sessionUser: User }) => {
   const [post, setPost] = useState({
     text: "" as string,
     imgs: [] as { url: string; publicId: string; base64: string }[],
@@ -64,7 +64,7 @@ const CreatePost = ({ loggedInUser }: { loggedInUser: User }) => {
     const imgsBase64 = post.imgs.map(img => img.base64);
     const imgs = await uploadImgsToCloudinary(imgsBase64);
 
-    createPost({ text: post.text, imgs }, {
+    createPost({ userId: sessionUser?._id, post: { text: post.text, imgs } }, {
       onSettled: () => {
         setPost({ text: "", imgs: [] });
         setIsPosting(false);
@@ -74,7 +74,7 @@ const CreatePost = ({ loggedInUser }: { loggedInUser: User }) => {
   return (
     <div className="flex items-start gap-x-4 p-4 border-b border-gray-700 z-0">
       <figure className="relative w-10 h-10 rounded-full overflow-hidden">
-        <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
+        <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
       </figure>
       <div className="flex-1">
         <TextareaAutosize className="w-full mb-10 bg-transparent focus:outline-none resize-none" placeholder="What's happening?" minRows={1} maxRows={10} value={post.text} onChange={(e) => setPost(curr => ({ ...curr, text: e.target.value }))} />

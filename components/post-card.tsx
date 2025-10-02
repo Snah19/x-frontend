@@ -22,7 +22,7 @@ import useDeleteComments from "@/hooks/useDeleteComments";
 import useDeletePost from "@/hooks/useDeletePost";
 import TextareaAutosize from "react-textarea-autosize";
 import useUpdatePostText from "@/hooks/useUpdatePostText";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
 
 const getTotalComments = async (postId: string) => {
   try {
@@ -37,7 +37,7 @@ const getTotalComments = async (postId: string) => {
 };
 
 const PostCard = ({ post }: { post: Post }) => {
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
 
   const { data: totalComments } = useQuery({
     queryKey: ["totalComments", post?._id],
@@ -55,7 +55,7 @@ const PostCard = ({ post }: { post: Post }) => {
   const { deletePost } = useDeletePost();
   const { updatePostText } = useUpdatePostText();
 
-  const isFollowing = loggedInUser?.following?.includes(post?.user?._id);
+  const isFollowing = sessionUser?.following?.includes(post?.user?._id);
 
   const [isLiked, setIsLiked] = useState(false);
   const [isFav, setIsFav] = useState(false);
@@ -68,23 +68,23 @@ const PostCard = ({ post }: { post: Post }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
-    if (loggedInUser) {
+    if (sessionUser) {
       setText(post?.text);
 
-      setIsLiked(post?.likes?.includes(loggedInUser._id));
-      setIsFav(post?.favorites?.includes(loggedInUser._id));
-      setIsReposted(post?.reposts?.includes(loggedInUser._id));
+      setIsLiked(post?.likes?.includes(sessionUser._id));
+      setIsFav(post?.favorites?.includes(sessionUser._id));
+      setIsReposted(post?.reposts?.includes(sessionUser._id));
 
       setLikeCount(post?.likes?.length || 0);
       setFavCount(post?.favorites?.length || 0);
       setRepostCount(post?.reposts?.length || 0);
     }
-  }, [post, loggedInUser]);
+  }, [post, sessionUser]);
 
   const handleLike = (e: React.MouseEvent<HTMLButtonElement>, postId: string) => {
     e.stopPropagation();
 
-    like({ postId });
+    like({ userId: sessionUser?._id, postId });
     setIsLiked(curr => !curr);
     setLikeCount(curr => isLiked ? curr - 1 : curr + 1);
   };
@@ -92,17 +92,24 @@ const PostCard = ({ post }: { post: Post }) => {
   const handleAddToFavorite = (e: React.MouseEvent<HTMLButtonElement>, postId: string) => {
     e.stopPropagation();
 
-    favorite({ postId });
+    favorite({ userId: sessionUser?._id, postId });
     setIsFav(curr => !curr);
     setFavCount(curr => isFav ? curr - 1 : curr + 1);
+    if (!isFav) {
+      toast("Added to favorite");
+    }
   };
 
   const handleRepost = (e: React.MouseEvent<HTMLButtonElement>, postId: string) => {
     e.stopPropagation();
 
-    repost({ postId });
+    repost({ userId: sessionUser?._id ,postId });
     setIsReposted(curr => !curr);
     setRepostCount(curr => isReposted ? curr - 1 : curr + 1);
+
+    if (!isReposted) {
+      toast("Reposted");
+    }
   };
 
   const handleOpenModal = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -120,7 +127,7 @@ const PostCard = ({ post }: { post: Post }) => {
       }
 
       deleteComments({ postId: post?._id });
-      deletePost({ postId: post?._id });
+      deletePost({ userId: sessionUser?._id, postId: post?._id });
 
       setIsModalOpen(false);
     }
@@ -222,13 +229,13 @@ const PostCard = ({ post }: { post: Post }) => {
         </div>
         <div className="relative">
           <button className="p-1 rounded-full hover:bg-blue-500/20" onClick={handleOpenModal}><MdMoreHoriz /></button>
-          {((loggedInUser?.username === post?.user?.username) && isModalOpen) && (
+          {((sessionUser?.username === post?.user?.username) && isModalOpen) && (
             <div className="absolute top-0 right-8 py-1 rounded-xl ring-1 ring-gray-500 bg-black">
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={e => handleEditing(e, post?.text)}>Edit</button>
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={(e) => handleDelete(e, post)}>Delete</button>
             </div>
           )}
-          {((loggedInUser?.username !== post?.user?.username) && isModalOpen) && (
+          {((sessionUser?.username !== post?.user?.username) && isModalOpen) && (
             <div className="absolute top-0 right-8 py-1 rounded-xl ring-1 ring-gray-500 bg-black">
               <button className="w-24 py-0.5 hover:bg-white/20" onClick={handleReport}>Report</button>
             </div>

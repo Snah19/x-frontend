@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const deletePostFn = async ({ postId }: { postId: string }) => {
+const deletePostFn = async ({ userId, postId }: { userId: string, postId: string }) => {
   try {
-    const { data } = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/${postId}`, { withCredentials: true });
+    const { data } = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/${postId}`, { data: { userId } });
     return data;
   }
   catch (error: any) {

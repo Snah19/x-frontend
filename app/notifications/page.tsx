@@ -6,7 +6,6 @@ import NotificationTopbar from "@/components/notification-topbar";
 import { Notification } from "@/types";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Rightbar from "@/components/rightbar";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
 import { useScrollStore } from "@/providers/scroll-provider";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -14,10 +13,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { LineSpinner } from 'ldrs/react';
 import 'ldrs/react/LineSpinner.css';
+import useSessionUser from "@/hooks/useSessionUser";
 
-const getNotifications = async ({ type, pageParam } :{type: string, pageParam: number}) => {
+const getNotifications = async ({ userId, type, pageParam } :{userId: string, type: string, pageParam: number}) => {
   try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications?type=${type}`, { params: { page: pageParam, limit: 10 }, withCredentials: true });
+    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/${userId}`, { params: { type, page: pageParam, limit: 10 } });
     return data;
   }
   catch (error: any) {
@@ -26,8 +26,7 @@ const getNotifications = async ({ type, pageParam } :{type: string, pageParam: n
 };
 
 const NotificationsPage = () => {
-  const { loggedInUser } = useLoggedInUser();
-
+  const { sessionUser } = useSessionUser();
   const [type, setType] = useState("all");
 
   const scrollStore = useScrollStore();
@@ -49,10 +48,11 @@ const NotificationsPage = () => {
   };
 
   const { data: notificationsData, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["notifications", loggedInUser?.username, type],
-    queryFn: ({ pageParam = 1 }) => getNotifications({ type, pageParam }),
+    queryKey: ["notifications", sessionUser?.username, type],
+    queryFn: ({ pageParam = 1 }) => getNotifications({ userId: sessionUser?._id, type, pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
     initialPageParam: 1,
+    enabled: !!sessionUser?._id,
   });
 
   const notifications: Notification[] = notificationsData?.pages.flatMap(page => page.data) ?? [];

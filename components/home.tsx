@@ -10,23 +10,23 @@ import axios from "axios";
 import { Post } from "@/types";
 import { useRouter } from "next/navigation";
 import InfiniteScroll from "react-infinite-scroll-component";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
 
 import { LineSpinner } from 'ldrs/react';
 import 'ldrs/react/LineSpinner.css';
+import useSessionUser from "@/hooks/useSessionUser";
 
-const getForYouFeed = async ({ pageParam = 1 }) => {
+const getForYouFeed = async ({ pageParam = 1 }: { pageParam: number }) => {
   const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/for-you`, { params: { page: pageParam, limit: 10 } });
   return data;
 };
 
-const getFollowingFeed = async ({ pageParam = 1 }) => {
-  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/following`, { params: { page: pageParam, limit: 10 }, withCredentials: true });
+const getFollowingFeed = async ({ userId, pageParam = 1 }: { userId: string, pageParam: number }) => {
+  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/following/${userId}`, { params: { page: pageParam, limit: 10 } });
   return data;
 };
 
 const Home = ({ feed }: { feed: string }) => {
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
   const router = useRouter();
 
   // ----------- STORE THE LATEST SCROLL POSITION ----------
@@ -49,8 +49,11 @@ const Home = ({ feed }: { feed: string }) => {
 
   // ----------- INFINITE SCROLL WITH REACT QUERY -----------
   const { data: postsData, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: feed === "for-you" ? ["for-you"] : ["following"],
-    queryFn: feed === "for-you" ? getForYouFeed : getFollowingFeed,
+    queryKey: feed === "for-you" ? ["for-you"] : ["following", sessionUser?._id],
+    queryFn: ({ pageParam = 1 }) =>
+      feed === "for-you"
+        ? getForYouFeed({ pageParam })
+        : getFollowingFeed({ userId: sessionUser?._id, pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
     initialPageParam: 1,
   });
@@ -59,8 +62,8 @@ const Home = ({ feed }: { feed: string }) => {
 
   return (
     <main className="flex-1 h-screen xs:border-r border-gray-700 overflow-auto hide-scrollbar" ref={containerRef} onScroll={handleStoreScrollPositions} id="scrollableDiv">
-      <Topbar loggedInUser={loggedInUser} feed={feed} />
-      <CreatePost loggedInUser={loggedInUser} />
+      <Topbar sessionUser={sessionUser} feed={feed} />
+      <CreatePost sessionUser={sessionUser} />
 
       <InfiniteScroll dataLength={posts.length} next={fetchNextPage} hasMore={hasNextPage} loader={<div className="my-5 text-center"><LineSpinner size="30" stroke="3" speed="1" color="#3B82F6" /></div>}scrollableTarget="scrollableDiv">
         {isLoading ? (

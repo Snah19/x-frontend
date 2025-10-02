@@ -11,10 +11,10 @@ import CommentCard from "./comment-card";
 import { Comment } from "@/types";
 import useComment from "@/hooks/useComment";
 import { useState } from "react";
-import useLoggedInUser from "@/hooks/useLoggedInUser";
+import useSessionUser from "@/hooks/useSessionUser";
 
 const PostDetail = ({ username, postId }: { username: string; postId: string }) => {
-  const { loggedInUser } = useLoggedInUser();
+  const { sessionUser } = useSessionUser();
 
   const { data: post } = useQuery({
     queryKey: ["post", username, postId],
@@ -31,7 +31,7 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
   const { comment } = useComment();
 
   const handleComment = () => {
-    comment({ postId, content });
+    comment({ userId: sessionUser?._id ,postId, content });
     setContent("");
   }
 
@@ -45,7 +45,7 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
       <div className="">
         <div className="flex gap-x-4 p-4 border-b border-gray-700">
           <figure className="relative size-10 rounded-full overflow-hidden">
-            <Image className="object-cover" src={loggedInUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
+            <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
           </figure>
           <div className="flex-1 flex items-end gap-x-2">
             <TextareaAutosize className="w-full mb-10 bg-transparent focus:outline-none resize-none" placeholder="Add a comment" minRows={1} maxRows={10} value={content} onChange={(e) => setContent(e.target.value)} />
