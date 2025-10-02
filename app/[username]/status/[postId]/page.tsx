@@ -1,13 +1,18 @@
-"use client";
-
 import Leftbar from "@/components/leftbar";
 import PostDetail from "@/components/post-detail";
 import Rightbar from "@/components/rightbar";
-import { useParams } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-const StatusPage = () => {
-  const params = useParams<{ username: string; postId: string }>();
-  const {username , postId} = params;
+const StatusPage = async ({ params }: { params: { username: string, postId: string } }) => {
+  const { username , postId } = await params;
+  const session = await getServerSession();
+  
+  if (!session) {
+    redirect("/login");
+  }
+
+  console.log(session);
 
   return (
     <>

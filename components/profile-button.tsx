@@ -5,11 +5,13 @@ import { useState } from "react";
 import { MdMoreHoriz } from "react-icons/md";
 import userIcon from "@/public/img/user-icon.jpg";
 import { signOut } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const ProfileButton = ({ username, fullname, imgUrl }: { username: string, fullname: string, imgUrl: string }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = () => {
+    toast("Logged out");
     signOut();
     setIsModalOpen(false);
   };

@@ -8,6 +8,7 @@ import { LiaEyeSlashSolid } from "react-icons/lia";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
   const [visiblePW, setVisiblePW] = useState<boolean>(false);
@@ -30,8 +31,8 @@ const LoginForm = () => {
         return;
       }
 
+      toast("Logged in");
       router.replace("/");
-      console.log("redirected"); // printed: redirected
     }
     catch (error: any) {
       console.log("Error logging in user:", error);
