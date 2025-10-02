@@ -46,7 +46,7 @@ const Leftbar = () => {
             </div>
             <span className="hidden xl:inline-block">Notifications</span>
           </Link>
-          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${sessionUser?.username}?tab=posts`}>
+          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
             <FaUser className="text-2xl" />
             <span className="hidden xl:inline-block">Profile</span>
           </Link>
