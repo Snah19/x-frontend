@@ -8,9 +8,10 @@ import { FaUser } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { useEffect, useRef } from "react";
 import userIcon from "@/public/img/user-icon.jpg";
-import useLogout from "@/hooks/useLogout";
 import { useRouter } from "next/navigation";
 import useSessionUser from "@/hooks/useSessionUser";
+import { signOut } from "next-auth/react";
+import toast from "react-hot-toast";
 
 type MobileSidebarProps = {
   setIsMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +19,6 @@ type MobileSidebarProps = {
 
 const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const { logout } = useLogout();
   const router = useRouter();
 
   const { sessionUser } = useSessionUser();
@@ -37,7 +37,8 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
   }, []);
 
   const handleLogout = () => {
-    logout();
+    signOut();
+    toast("Logged out");
     router.push("/login");
   };
 
