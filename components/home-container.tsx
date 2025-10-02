@@ -25,7 +25,7 @@ const getFollowingFeed = async ({ userId, pageParam = 1 }: { userId: string, pag
   return data;
 };
 
-const Home = ({ feed }: { feed: string }) => {
+const HomeContainer = ({ feed }: { feed: string }) => {
   const { sessionUser } = useSessionUser();
   const router = useRouter();
 
@@ -84,4 +84,4 @@ const Home = ({ feed }: { feed: string }) => {
   );
 };
 
-export default Home;
+export default HomeContainer;

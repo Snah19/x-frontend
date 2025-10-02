@@ -1,4 +1,4 @@
-import Home from "@/components/home";
+import HomeContainer from "@/components/home-container";
 import Leftbar from "@/components/leftbar";
 import Rightbar from "@/components/rightbar";
 import { getServerSession } from "next-auth";
@@ -17,7 +17,7 @@ const HomePage = async ({ searchParams }: { searchParams: {feed: string } }) => 
     <>
       <div className="flex-1 flex">
         <Leftbar />
-        <Home feed={feed || "for-you"} />
+        <HomeContainer feed={feed || "for-you"} />
       </div>
       <Rightbar />
     </>
