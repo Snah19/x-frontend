@@ -6,15 +6,13 @@ import { useState } from "react";
 import { LiaEyeSolid } from "react-icons/lia";
 import { LiaEyeSlashSolid } from "react-icons/lia";
 
-import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
   const [visiblePW, setVisiblePW] = useState<boolean>(false);
   const [error, setError] = useState("");
-
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,17 +23,14 @@ const LoginForm = () => {
     const password = formData.get("password") as string;
 
     try {
-      const res = await signIn("credentials", {
-        username,
-        password,
-        redirect: true,
-        callbackUrl
-      });
+      const res = await signIn("credentials", { username, password, redirect: false });
 
       if (res?.error) {
         setError("Invalid credentials");
         return;
       }
+
+      router.replace("/login");
     }
     catch (error: any) {
       console.log("Error logging in user:", error);
