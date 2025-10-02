@@ -38,8 +38,8 @@ const authOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async redirect({ baseUrl }) {
-      return baseUrl + "/login";
+    async redirect({ url, baseUrl }) {
+      return url?.startsWith(baseUrl) ? url : baseUrl;
     },
   },
 };
