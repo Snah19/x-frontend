@@ -38,8 +38,8 @@ const authOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async redirect() {
-      return process.env.NEXTAUTH_URL + "/login";
+    async redirect({ baseUrl }) {
+      return baseUrl + "/login";
     },
   },
 };
