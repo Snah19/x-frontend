@@ -34,14 +34,9 @@ const authOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // pages: {
-  //   signIn: "/login",
-  // },
-  // callbacks: {
-  //   async redirect({ url, baseUrl }) {
-  //     return url?.startsWith(baseUrl) ? url : baseUrl;
-  //   },
-  // },
+  pages: {
+    signIn: "/login",
+  },
 };
 
 const handler = NextAuth(authOptions);
