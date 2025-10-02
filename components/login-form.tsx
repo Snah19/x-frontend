@@ -30,7 +30,8 @@ const LoginForm = () => {
         return;
       }
 
-      router.replace("/login");
+      router.replace("/");
+      console.log("redirected"); // printed: redirected
     }
     catch (error: any) {
       console.log("Error logging in user:", error);
