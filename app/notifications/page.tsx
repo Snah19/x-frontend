@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { LineSpinner } from 'ldrs/react';
 import 'ldrs/react/LineSpinner.css';
 import useSessionUser from "@/hooks/useSessionUser";
+import { useRouter } from "next/navigation";
 
 const getNotifications = async ({ userId, type, pageParam } :{userId: string, type: string, pageParam: number}) => {
   try {
@@ -27,6 +28,11 @@ const getNotifications = async ({ userId, type, pageParam } :{userId: string, ty
 
 const NotificationsPage = () => {
   const { sessionUser } = useSessionUser();
+  const router = useRouter();
+  if (!sessionUser) {
+    router.replace("/login");
+  }
+
   const [type, setType] = useState("all");
 
   const scrollStore = useScrollStore();
