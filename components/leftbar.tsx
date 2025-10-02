@@ -6,19 +6,8 @@ import { GoHomeFill } from "react-icons/go";
 import { FaBell } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import ProfileButton from "./profile-button";
-import axios from "axios";
 import useSessionUser from "@/hooks/useSessionUser";
 import useTotalNotifications from "@/hooks/useTotalNotifications";
-
-const getTotalUnreadNotifications = async (userId: string) => {
-  try {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/notifications/total/${userId}`);
-    return data;
-  }
-  catch (error: any) {
-    console.log("Error in getTotalUnreadNotifications function:", error.message);
-  }
-};
 
 const Leftbar = () => {
   const { sessionUser } = useSessionUser();

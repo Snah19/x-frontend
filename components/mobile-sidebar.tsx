@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import useSessionUser from "@/hooks/useSessionUser";
 import { signOut } from "next-auth/react";
 import toast from "react-hot-toast";
+import useTotalNotifications from "@/hooks/useTotalNotifications";
 
 type MobileSidebarProps = {
   setIsMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,6 +21,7 @@ type MobileSidebarProps = {
 const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const notifications = useTotalNotifications();
 
   const { sessionUser } = useSessionUser();
 
@@ -72,7 +74,14 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
             <span>Home</span>
           </Link>
           <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href="/notifications">
-            <FaBell className="text-2xl"/>
+            <div className="relative">
+              <FaBell className="text-2xl" />
+              {notifications && notifications?.all !== 0 && (
+                <div className="absolute -top-3 -right-2 inline-flex justify-center items-center size-5 text-xs rounded-full text-center bg-red-500">
+                  {notifications?.all <= 99 ? <span>{notifications?.all}</span> : <span className="relative">99  <span className="absolute -top-1.5 -right-1.5">+</span></span>}
+                </div>
+              )}
+            </div>
             <span>Notifications</span>
           </Link>
           <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
