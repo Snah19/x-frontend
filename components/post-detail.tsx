@@ -31,6 +31,8 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
   const { comment } = useComment();
 
   const handleComment = () => {
+    if (!content.trim()) return;
+    
     comment({ userId: sessionUser?._id ,postId, content });
     setContent("");
   }

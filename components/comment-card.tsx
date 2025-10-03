@@ -73,6 +73,8 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
   const [showReplies, setShowReplies] = useState(false);
 
   const handleReplyComment = (commentId: string) => {
+    if (!content.trim()) return;
+
     reply({ userId: sessionUser?._id, commentId , content });
     setContent("");
     setIsReplying(curr => !curr);
