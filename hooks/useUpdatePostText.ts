@@ -21,7 +21,7 @@ const useUpdatePostText = () => {
         queryClient.invalidateQueries({queryKey: ["for-you"]}),
         queryClient.invalidateQueries({queryKey: ["following"]}),
       ]);
-      toast("Posted updated");
+      toast("Updated");
     },
     onError: (error: any) => {
       toast.error(error.message);

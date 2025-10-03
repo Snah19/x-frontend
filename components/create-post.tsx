@@ -59,6 +59,8 @@ const CreatePost = ({ sessionUser }: { sessionUser: User }) => {
 
   const handleCreatePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!post.text.trim()) return;
+
     setIsPosting(true);
 
     const imgsBase64 = post.imgs.map(img => img.base64);
@@ -71,6 +73,7 @@ const CreatePost = ({ sessionUser }: { sessionUser: User }) => {
       }
     });
   };
+
   return (
     <div className="flex items-start gap-x-4 p-4 border-b border-gray-700 z-0">
       <figure className="relative w-10 h-10 rounded-full overflow-hidden">
