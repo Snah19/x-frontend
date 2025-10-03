@@ -25,7 +25,7 @@ const useDeletePost = () => {
           queryKey: ["following"]
         }),
       ]);
-      toast.success("Post deleted");
+      toast("Post deleted");
     },
     onError: (error: any) => {
       toast.error(error.message);

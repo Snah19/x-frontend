@@ -27,7 +27,7 @@ const useReplyComment = () => {
         }),
         queryClient.invalidateQueries({ queryKey: ["replies", variables.commentId] }),
       ]);
-      toast.success("Comment posted");
+      toast("Comment posted");
     },
     onError: (error: any) => {
       toast.error(error.message);

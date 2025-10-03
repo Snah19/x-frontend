@@ -1,4 +1,3 @@
-// lib/auth.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import connectMongoDB from "@/lib/mongodb";
@@ -21,10 +20,10 @@ export const authOptions: NextAuthOptions = {
         await connectMongoDB();
         const user = await UserModel.findOne({ username });
 
-        if (!user) return null;
+        if (!user) throw new Error(`Cannot find username: ${username}`);
 
         const isMatched = await bcrypt.compare(password, user.password);
-        if (!isMatched) return null;
+        if (!isMatched) throw new Error("Incorrect password");
 
         return {
           id: user._id.toString(),

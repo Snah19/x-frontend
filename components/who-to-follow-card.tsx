@@ -3,10 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { User } from "@/types";
 import SuggestedUser from "./suggested-user";
-import { LineSpinner } from 'ldrs/react';
-import 'ldrs/react/LineSpinner.css';
 import axios from "axios";
 import useSessionUser from "@/hooks/useSessionUser";
+
+import { LineSpinner } from 'ldrs/react';
+import 'ldrs/react/LineSpinner.css';
 
 const getSuggestedUsers = async (userId: string) => {
   try {

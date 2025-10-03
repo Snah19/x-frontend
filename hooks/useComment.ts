@@ -21,7 +21,7 @@ const useComment = () => {
         queryClient.invalidateQueries({ queryKey: ["comments", variables.postId] }),
         queryClient.invalidateQueries({ queryKey: ["totalComments", variables.postId] }),
       ]);
-      toast.success("Comment posted");
+      toast("Comment posted");
     },
     onError: (error: any) => {
       toast.error(error.message);

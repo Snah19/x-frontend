@@ -55,7 +55,7 @@ const SignInForm = () => {
     mutate(user, {
       onSuccess: () => {
         form.reset();
-        toast.success("Account created successfully. Please login");
+        toast("Please login");
         router.push("/login");
       },
     });
