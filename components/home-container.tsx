@@ -2,18 +2,21 @@
 
 import CreatePost from "./create-post";
 import Topbar from "./topbar";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useScrollStore } from "@/providers/scroll-provider";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import PostCard from "./post-card";
 import axios from "axios";
 import { Post } from "@/types";
 import { useRouter } from "next/navigation";
 import InfiniteScroll from "react-infinite-scroll-component";
+import useSessionUser from "@/hooks/useSessionUser";
+import { io } from "socket.io-client";
 
 import { LineSpinner } from 'ldrs/react';
 import 'ldrs/react/LineSpinner.css';
-import useSessionUser from "@/hooks/useSessionUser";
+
+const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL!);
 
 const getForYouFeed = async ({ pageParam = 1 }: { pageParam: number }) => {
   const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/for-you`, { params: { page: pageParam, limit: 10 } });
@@ -28,6 +31,7 @@ const getFollowingFeed = async ({ userId, pageParam = 1 }: { userId: string, pag
 const HomeContainer = ({ feed }: { feed: string }) => {
   const { sessionUser } = useSessionUser();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // ----------- STORE THE LATEST SCROLL POSITION ----------
   const scrollStore = useScrollStore();
@@ -48,6 +52,7 @@ const HomeContainer = ({ feed }: { feed: string }) => {
   }, [scrollStore]);
 
   // ----------- INFINITE SCROLL WITH REACT QUERY -----------
+
   const { data: postsData, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: feed === "for-you" ? ["for-you"] : ["following", sessionUser?._id],
     queryFn: ({ pageParam = 1 }) =>
@@ -59,6 +64,20 @@ const HomeContainer = ({ feed }: { feed: string }) => {
   });
 
   const posts: Post[] = postsData?.pages.flatMap(page => page.data) ?? [];
+
+  // ---------------- WEBSOCKET REALTIME ----------------
+  useEffect(() => {
+    socket.on("realtimePost", (realtimePost) => {
+      if (realtimePost.userId === sessionUser?._id) return;
+
+      queryClient.invalidateQueries({ queryKey: ["for-you"] });
+      queryClient.invalidateQueries({ queryKey: ["following", sessionUser?._id] });
+    });
+
+    return () => {
+      socket.off("realtimePost");
+    };
+  }, []);
 
   return (
     <main className="flex-1 h-screen xs:border-r border-gray-700 overflow-auto hide-scrollbar" ref={containerRef} onScroll={handleStoreScrollPositions} id="scrollableDiv">

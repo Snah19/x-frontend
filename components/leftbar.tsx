@@ -8,10 +8,26 @@ import { FaUser } from "react-icons/fa";
 import ProfileButton from "./profile-button";
 import useSessionUser from "@/hooks/useSessionUser";
 import useTotalNotifications from "@/hooks/useTotalNotifications";
+import { useEffect } from "react";
+import { io } from "socket.io-client";
+import { useQueryClient } from "@tanstack/react-query";
+
+const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL!);
 
 const Leftbar = () => {
   const { sessionUser } = useSessionUser();
   const notifications = useTotalNotifications();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    socket.on("realtimeNotifications", realtimeNotifications => {
+      if (realtimeNotifications.isNew) queryClient.invalidateQueries({ queryKey: ["totalNotifications"] });
+    });
+
+    return () => {
+      socket.off("realtimeNotifications");
+    };
+  }, []);
 
   return (
     <aside className="hidden xs:flex flex-col justify-between max-w-[15.625rem] min-h-screen p-2 border-r border-gray-700">
