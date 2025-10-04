@@ -59,7 +59,7 @@ const CreatePost = ({ sessionUser }: { sessionUser: User }) => {
 
   const handleCreatePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!post.text.trim()) return;
+    if (!post.text.trim() && post.imgs?.length === 0) return;
 
     setIsPosting(true);
 
