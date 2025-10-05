@@ -12,8 +12,6 @@ const StatusPage = async ({ params }: { params: { username: string, postId: stri
     redirect("/login");
   }
 
-  console.log(session);
-
   return (
     <>
       <div className="flex-1 flex">

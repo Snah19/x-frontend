@@ -10,7 +10,6 @@ import { IoStatsChart } from "react-icons/io5";
 import { FaRegBookmark } from "react-icons/fa6";
 import { Post } from "@/types";
 import userIcon from "@/public/img/user-icon.jpg";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import useLike from "@/hooks/useLike";
 import useFavorite from "@/hooks/useFavorite";
@@ -25,11 +24,11 @@ import useUpdatePostText from "@/hooks/useUpdatePostText";
 import useSessionUser from "@/hooks/useSessionUser";
 import { io } from "socket.io-client";
 
-const getPostStats = async (postId: string) => {
+const getTotalComments = async (postId: string) => {
   try {
-    if (!postId) return 0;
-
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/posts/stats/${postId}`);
+    if (!postId) return;
+    
+    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/comments/total/${postId}`);
     return data;
   }
   catch (error: any) {
@@ -41,12 +40,6 @@ const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL);
 
 const PostCard = ({ post }: { post: Post }) => {
   const { sessionUser } = useSessionUser();
-  const queryClient = useQueryClient();
-
-  const { data: postStats } = useQuery({
-    queryKey: ["postStats", post?._id],
-    queryFn: () => getPostStats(post?._id)
-  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -64,17 +57,35 @@ const PostCard = ({ post }: { post: Post }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isFav, setIsFav] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
+
+  const [totalComments, setTotalComments] = useState(0);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [totalReposts, setTotalReposts] = useState(0);
+  const [totalFavorites, setTotalFavorites] = useState(0);
   
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
-    if (sessionUser) {
-      setText(post?.text);
+    const fetchData = async () => {
+      try {
+        if (!sessionUser || !post?._id) return;
+        const totalComments = await getTotalComments(post._id);
 
-      setIsLiked(post?.likes?.includes(sessionUser._id));
-      setIsFav(post?.favorites?.includes(sessionUser._id));
-      setIsReposted(post?.reposts?.includes(sessionUser._id));
-    }
+        setText(post.text);
+        setIsLiked(post.likes?.includes(sessionUser._id));
+        setIsFav(post.favorites?.includes(sessionUser._id));
+        setIsReposted(post.reposts?.includes(sessionUser._id));
+
+        setTotalComments(totalComments);
+        setTotalLikes(post.likes?.length || 0);
+        setTotalReposts(post.reposts?.length || 0);
+        setTotalFavorites(post.favorites?.length || 0);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    };
+
+    fetchData();
   }, [post, sessionUser]);
 
   const handleLike = (e: React.MouseEvent<HTMLButtonElement>, postId: string) => {
@@ -159,16 +170,53 @@ const PostCard = ({ post }: { post: Post }) => {
   };
 
   useEffect(() => {
-    socket.on("realtimePostStats", realtimePostStats => {
-      if (realtimePostStats?.postId === post?._id) {
-        queryClient.invalidateQueries({ queryKey: ["postStats", post?._id] });
-      }
-    });
+    const getRealtimeTotalComments = ({ postId: rtPostId, totalComments }: any) => {
+      if (rtPostId === post?._id) setTotalComments(totalComments);
+    }
+
+    socket.on("realtimeTotalComments", getRealtimeTotalComments);
 
     return () => {
-      socket.off("realtimePostStats");
+      socket.off("realtimeTotalComments", getRealtimeTotalComments);
     };
-  }, []);
+  }, [post?._id]);
+
+  useEffect(() => {
+    const getRealtimeTotalLikes = ({ postId: rtPostId, totalLikes }: any) => {
+      if (rtPostId === post?._id) setTotalLikes(totalLikes);
+    };
+
+    socket.on("realtimePostLikes", getRealtimeTotalLikes);
+
+    return () => {
+      socket.off("realtimePostLikes", getRealtimeTotalLikes);
+    };
+  }, [post?._id]);
+
+  useEffect(() => {
+    const getRealtimeTotalReposts = ({ postId: rtPostId, totalReposts }: any) => {
+      if (rtPostId === post?._id) setTotalReposts(totalReposts);
+    };
+
+    socket.on("realtimePostReposts", getRealtimeTotalReposts);
+
+    return () => {
+      socket.off("realtimePostReposts", getRealtimeTotalReposts);
+    }
+
+  }, [post?._id]);
+
+  useEffect(() => {
+    const getRealtimeTotalFavorites = ({ postId: rtPostId, totalFavorites }: any) => {
+      if (rtPostId === post?._id) setTotalFavorites(totalFavorites);
+    };
+
+    socket.on("realtimePostFavorites", getRealtimeTotalFavorites);
+
+    return () => {
+      socket.on("realtimePostFavorites", getRealtimeTotalFavorites);
+    };
+  }, [post?._id]);
   
   return (
     <div className="p-4 border-b border-gray-700">
@@ -208,19 +256,19 @@ const PostCard = ({ post }: { post: Post }) => {
               <div className="flex justify-between">
                 <div className="flex items-center text-gray-500">
                   <button className="p-2"><FaRegComment /></button>
-                  <span className="text-xs ">{postStats?.comments}</span>
+                  <span className="text-xs ">{totalComments}</span>
                 </div>
                 <div className="flex items-center text-gray-500">
                   <button className="p-2" onClick={(e) => handleRepost(e, post?._id)}><BiRepost className={`text-xl ${isReposted && "text-green-500"}`} /></button>
-                  <span className={`text-xs ${isReposted && "text-green-500"}`}>{postStats?.reposts}</span>
+                  <span className={`text-xs ${isReposted && "text-green-500"}`}>{totalReposts}</span>
                 </div>
                 <div className="flex items-center text-gray-500">
                   <button className="p-2" onClick={(e) => handleLike(e, post?._id)}><GoHeart className={`${isLiked && "text-red-500"}`} /></button>
-                  <span className={`text-xs ${isLiked && "text-red-500"}`}>{postStats?.likes}</span>
+                  <span className={`text-xs ${isLiked && "text-red-500"}`}>{totalLikes}</span>
                 </div>
                 <div className="flex items-center text-gray-500">
                   <button className="p-2" onClick={(e) => handleAddToFavorite(e, post?._id)}><FaRegBookmark className={`${isFav && "text-yellow-500"}`} /></button>
-                  <span className={`text-xs ${isFav && "text-yellow-500"}`}>{postStats?.favorites}</span>
+                  <span className={`text-xs ${isFav && "text-yellow-500"}`}>{totalFavorites}</span>
                 </div>
                 <div className="flex items-center text-gray-500">
                   <button className="p-2"><IoStatsChart /></button>

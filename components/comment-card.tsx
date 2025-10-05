@@ -110,10 +110,10 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
       if (rtCommentId === comment._id) setLikeCount(totalLikes);
     };
 
-    socket.on("commentLikesUpdate", handleCommentLikesUpdate);
+    socket.on("realtimeCommentLikes", handleCommentLikesUpdate);
 
     return () => {
-      socket.off("commentLikesUpdate", handleCommentLikesUpdate);
+      socket.off("realtimeCommentLikes", handleCommentLikesUpdate);
     };
   }, [comment._id]);
 
@@ -157,7 +157,7 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
               <div className="mb-2">
                 <button className="flex gap-x-2 text-xs text-blue-500" onClick={() => setShowReplies(curr => !curr)}>
                   {showReplies ? <TbChevronCompactUp className="text-base" /> : <TbChevronCompactDown className="text-base" />}
-                  <span>{replies?.length} replies</span>
+                  <span>{replies?.length} {replies?.length === 1 ? "reply" : "replies"}</span>
                 </button>
               </div>
             )}

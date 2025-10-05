@@ -69,15 +69,3 @@ export const getComments = async (postId: string) => {
     throw { message: error.response?.data?.message };
   } 
 };
-
-export const getTotalComments = async (postId: string) => {
-  try {
-    if (!postId) return;
-    
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/comments/total/${postId}`);
-    return data;
-  }
-  catch (error: any) {
-    throw { message: error.response?.data?.message };
-  }
-};

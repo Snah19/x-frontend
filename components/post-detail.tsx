@@ -41,12 +41,10 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
     setContent("");
   }
 
-  const [realtime, setRealtime] = useState({});
   useEffect(() => {
     socket.on("realtimeComment", realtimeComment => {
       if (realtimeComment?.postId === postId) {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-        setRealtime(realtimeComment);
       }
     });
 
@@ -54,8 +52,6 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
       socket.off("realtimeComment");
     };
   }, []);
-
-  console.log(realtime);
 
   return (
     <div>
