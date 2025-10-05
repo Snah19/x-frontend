@@ -1,7 +1,7 @@
 "use client";
 
 import { getComments, getPost } from "@/query-functions";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PostCard from "./post-card";
 import BackButton from "./back-button";
 import TextareaAutosize from "react-textarea-autosize";
@@ -10,11 +10,15 @@ import userIcon from "@/public/img/user-icon.jpg";
 import CommentCard from "./comment-card";
 import { Comment } from "@/types";
 import useComment from "@/hooks/useComment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSessionUser from "@/hooks/useSessionUser";
+import { io } from "socket.io-client";
+
+const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL);
 
 const PostDetail = ({ username, postId }: { username: string; postId: string }) => {
   const { sessionUser } = useSessionUser();
+  const queryClient = useQueryClient();
 
   const { data: post } = useQuery({
     queryKey: ["post", username, postId],
@@ -36,6 +40,22 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
     comment({ userId: sessionUser?._id ,postId, content });
     setContent("");
   }
+
+  const [realtime, setRealtime] = useState({});
+  useEffect(() => {
+    socket.on("realtimeComment", realtimeComment => {
+      if (realtimeComment?.postId === postId) {
+        queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+        setRealtime(realtimeComment);
+      }
+    });
+
+    return () => {
+      socket.off("realtimeComment");
+    };
+  }, []);
+
+  console.log(realtime);
 
   return (
     <div>

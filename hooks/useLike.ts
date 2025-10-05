@@ -16,10 +16,11 @@ const useLike = () => {
   const queryClient = useQueryClient();
   const { mutate: like, isPending } = useMutation({
     mutationFn: likeUnlikePost,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       Promise.all([
         queryClient.invalidateQueries({queryKey: ["for-you"]}),
         queryClient.invalidateQueries({queryKey: ["following"]}),
+        queryClient.invalidateQueries({queryKey: ["postStats", variables.postId]}),
       ]);
     },
     onError: (error: any) => {

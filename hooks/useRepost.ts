@@ -16,15 +16,8 @@ const useRepost = () => {
   const queryClient = useQueryClient();
   const { mutate: repost, isPending } = useMutation({
     mutationFn: repostUnrepostPost,
-    onSuccess: () => {
-      Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["for-you"]
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["following"]
-        }),
-      ]);
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({queryKey: ["postStats", variables?.postId]})
     },
     onError: (error: any) => {
       toast.error(error.message);

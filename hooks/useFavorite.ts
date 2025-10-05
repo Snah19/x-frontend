@@ -16,14 +16,11 @@ const useFavorite = () => {
   const queryClient = useQueryClient();
   const { mutate: favorite, isPending } = useMutation({
     mutationFn: favUnfavPost,
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["for-you"]
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["following"]
-        }),
+        queryClient.invalidateQueries({queryKey: ["for-you"]}),
+        queryClient.invalidateQueries({queryKey: ["following"]}),
+        queryClient.invalidateQueries({queryKey: ["postStats", variables?.postId]})
       ]);
     },
     onError: (error: any) => {

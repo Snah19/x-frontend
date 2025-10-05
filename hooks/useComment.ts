@@ -19,7 +19,7 @@ const useComment = () => {
     onSuccess: (_data, variables) => {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["comments", variables.postId] }),
-        queryClient.invalidateQueries({ queryKey: ["totalComments", variables.postId] }),
+        queryClient.invalidateQueries({ queryKey: ["postStats", variables.postId] }),
       ]);
     },
     onError: (error: any) => {

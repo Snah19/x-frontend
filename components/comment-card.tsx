@@ -5,8 +5,7 @@ import Image from "next/image";
 import { GoHeart } from "react-icons/go";
 import { Comment, Post } from "@/types";
 import userIcon from "@/public/img/user-icon.jpg";
-import { useQuery } from "@tanstack/react-query";
-import { getReplies } from "@/query-functions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import useLikeComment from "@/hooks/useLikeComment";
@@ -15,10 +14,24 @@ import { TbChevronCompactUp } from "react-icons/tb";
 import ReplyCard from "./reply-card";
 import useReplyComment from "@/hooks/useReplyComment";
 import useSessionUser from "@/hooks/useSessionUser";
+import { io } from "socket.io-client";
+import axios from "axios";
 
+const getReplies = async (commentId: string) => {
+  try {
+    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/comments/replies/${commentId}`);
+    return data;
+  }
+  catch (error: any) {
+    throw { message: error.response?.data?.message };
+  }
+};
+
+const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL!);
 
 const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
   const { sessionUser } = useSessionUser();
+  const queryClient = useQueryClient();
 
   const { data: replies } = useQuery({
     queryKey: ["replies", comment?._id],
@@ -45,9 +58,8 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
 
   const handleLikeComment = (e: React.MouseEvent<HTMLButtonElement>, commentId: string) => {
     e.stopPropagation();
-    likeComment({ userId: sessionUser?._id, commentId });
+    likeComment({ userId: sessionUser?._id, postId: post?._id, commentId });
     setIsLiked(curr => !curr);
-    setLikeCount(curr => isLiked ? curr - 1 : curr + 1);
   };
 
   useEffect(() => {
@@ -80,6 +92,30 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
     setIsReplying(curr => !curr);
     setShowReplies(true);
   };
+
+  useEffect(() => {
+    socket.on("realtimeReply", (realtimeReply) => {
+      if (realtimeReply.commentId === comment?._id) {
+        queryClient.invalidateQueries({ queryKey: ["replies", comment?._id] });
+      }
+    });
+
+    return () => {
+      socket.off("realtimeReply");
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleCommentLikesUpdate = ({ commentId: rtCommentId, totalLikes }: any) => {
+      if (rtCommentId === comment._id) setLikeCount(totalLikes);
+    };
+
+    socket.on("commentLikesUpdate", handleCommentLikesUpdate);
+
+    return () => {
+      socket.off("commentLikesUpdate", handleCommentLikesUpdate);
+    };
+  }, [comment._id]);
 
   return (
     <div className="p-4 border-b border-gray-700">
