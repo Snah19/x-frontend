@@ -220,7 +220,7 @@ const PostCard = ({ post }: { post: Post }) => {
               <div className="flex flex-wrap w-full rounded-xl border border-gray-500 overflow-hidden">
                 {post?.imgs.map((img, i) => (
                   <figure className="relative w-full aspect-video" key={i}>
-                    <Image className="object-cover" src={img.url} alt="" fill />
+                    <Image className="object-contain" src={img.url} alt="" fill />
                   </figure>
                 ))}
               </div>
