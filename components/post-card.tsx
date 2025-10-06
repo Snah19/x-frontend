@@ -170,53 +170,24 @@ const PostCard = ({ post }: { post: Post }) => {
   };
 
   useEffect(() => {
-    const getRealtimeTotalComments = ({ postId: rtPostId, totalComments }: any) => {
-      if (rtPostId === post?._id) setTotalComments(totalComments);
-    }
+    const events = [
+      { name: "realtimeTotalComments", key: "totalComments", setter: setTotalComments },
+      { name: "realtimePostLikes", key: "totalLikes", setter: setTotalLikes },
+      { name: "realtimePostReposts", key: "totalReposts", setter: setTotalReposts },
+      { name: "realtimePostFavorites", key: "totalFavorites", setter: setTotalFavorites }
+    ];
 
-    socket.on("realtimeTotalComments", getRealtimeTotalComments);
+    const handlers = events.map(({ name, key, setter }) => {
+      const fn = ({ postId: rtPostId, [key]: value }: any) => {
+        if (rtPostId === post?._id) setter(value);
+      };
 
-    return () => {
-      socket.off("realtimeTotalComments", getRealtimeTotalComments);
-    };
-  }, [post?._id]);
+      socket.on(name, fn);
+      return { name, fn };
+    });
 
-  useEffect(() => {
-    const getRealtimeTotalLikes = ({ postId: rtPostId, totalLikes }: any) => {
-      if (rtPostId === post?._id) setTotalLikes(totalLikes);
-    };
-
-    socket.on("realtimePostLikes", getRealtimeTotalLikes);
-
-    return () => {
-      socket.off("realtimePostLikes", getRealtimeTotalLikes);
-    };
-  }, [post?._id]);
-
-  useEffect(() => {
-    const getRealtimeTotalReposts = ({ postId: rtPostId, totalReposts }: any) => {
-      if (rtPostId === post?._id) setTotalReposts(totalReposts);
-    };
-
-    socket.on("realtimePostReposts", getRealtimeTotalReposts);
-
-    return () => {
-      socket.off("realtimePostReposts", getRealtimeTotalReposts);
-    }
-
-  }, [post?._id]);
-
-  useEffect(() => {
-    const getRealtimeTotalFavorites = ({ postId: rtPostId, totalFavorites }: any) => {
-      if (rtPostId === post?._id) setTotalFavorites(totalFavorites);
-    };
-
-    socket.on("realtimePostFavorites", getRealtimeTotalFavorites);
-
-    return () => {
-      socket.on("realtimePostFavorites", getRealtimeTotalFavorites);
-    };
-  }, [post?._id]);
+    return () => handlers.forEach(({ name, fn }) => socket.off(name, fn));
+  });
   
   return (
     <div className="p-4 border-b border-gray-700">
