@@ -12,6 +12,9 @@ import useLikeComment from "@/hooks/useLikeComment";
 import { TbChevronCompactDown } from "react-icons/tb";
 import { TbChevronCompactUp } from "react-icons/tb";
 import useSessionUser from "@/hooks/useSessionUser";
+import { io } from "socket.io-client";
+
+const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL!);
 
 const ReplyCard = ({ reply }: { reply: Comment }) => {
   const { sessionUser } = useSessionUser();
@@ -37,7 +40,6 @@ const ReplyCard = ({ reply }: { reply: Comment }) => {
     e.stopPropagation();
     likeComment({ userId: sessionUser?._id, commentId });
     setIsLiked(curr => !curr);
-    setLikeCount(curr => isLiked ? curr - 1 : curr + 1);
   };
 
   useEffect(() => {
@@ -59,6 +61,18 @@ const ReplyCard = ({ reply }: { reply: Comment }) => {
       }
     }, 0);
   };
+
+  useEffect(() => {
+    const handleCommentLikesUpdate = ({ commentId: rtCommentId, totalLikes }: any) => {
+      if (rtCommentId === reply._id) setLikeCount(totalLikes);
+    };
+
+    socket.on("realtimeCommentLikes", handleCommentLikesUpdate);
+
+    return () => {
+      socket.off("realtimeCommentLikes", handleCommentLikesUpdate);
+    };
+  }, [reply._id]);
 
   return (
     <div className="p-4 border-t border-gray-700">
