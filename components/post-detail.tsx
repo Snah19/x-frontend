@@ -42,14 +42,14 @@ const PostDetail = ({ username, postId }: { username: string; postId: string }) 
   }
 
   useEffect(() => {
-    socket.on("realtimeComment", realtimeComment => {
+    socket.on("realtimeTotalComments", realtimeComment => {
       if (realtimeComment?.postId === postId) {
         queryClient.invalidateQueries({ queryKey: ["comments", postId] });
       }
     });
 
     return () => {
-      socket.off("realtimeComment");
+      socket.off("realtimeTotalComments");
     };
   }, []);
 
