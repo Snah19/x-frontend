@@ -58,7 +58,7 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
 
   const handleLikeComment = (e: React.MouseEvent<HTMLButtonElement>, commentId: string) => {
     e.stopPropagation();
-    likeComment({ userId: sessionUser?._id, postId: post?._id, commentId });
+    likeComment({ userId: sessionUser?._id, commentId });
     setIsLiked(curr => !curr);
   };
 
