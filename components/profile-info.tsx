@@ -11,8 +11,6 @@ const ProfileInfo = ({ username }: { username: string }) => {
     queryFn: () => getProfile(username),
   });
 
-  console.log(user);
-
   return (
     <>
       {user ? <FoundedProfile user={user} /> : <NotFoundedUser username={username} />}
