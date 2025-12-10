@@ -13,7 +13,6 @@ import { CiMail } from "react-icons/ci";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import userIcon from "@/public/img/user-icon.jpg";
 import FollowButton from "./follow-button";
-import BackButton from "./back-button";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import useSessionUser from "@/hooks/useSessionUser";
 
@@ -89,7 +88,7 @@ const FoundedProfile = ({ user }: { user: User }) => {
         </Link>
         <div>
           <p className="text-sm font-medium">{user?.fullname}</p>
-          <span className="text-xs text-gray-500">4 posts</span>
+          <span className="text-xs text-gray-500">{user?.totalPosts} posts</span>
         </div>
       </div>
 

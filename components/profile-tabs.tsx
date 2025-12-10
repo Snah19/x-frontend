@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { Post } from "@/types";
 import { SetStateAction, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-
 import { LineSpinner } from 'ldrs/react';
 import 'ldrs/react/LineSpinner.css';
 

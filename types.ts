@@ -21,6 +21,7 @@ export type User = {
   likedPosts: string[];
   createdAt: Date;
   updatedAt: Date;
+  totalPosts?: string
 };
 
 export type Post = {
