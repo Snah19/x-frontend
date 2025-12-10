@@ -83,7 +83,7 @@ const FoundedProfile = ({ user }: { user: User }) => {
   return (
     <>
       <div className="sticky top-0 flex items-center gap-x-4 py-1 px-2 border-b border-gray-700 bg-black/50 backdrop-blur-md z-50">
-        <Link className="p-2 rounded-full hover:bg-gray-800" href="/">
+        <Link prefetch className="p-2 rounded-full hover:bg-gray-800" href="/">
           <IoMdArrowRoundBack className="text-xl" />
         </Link>
         <div>
@@ -133,7 +133,7 @@ const FoundedProfile = ({ user }: { user: User }) => {
               <span>{user?.email}</span>
             </p>        
             {user?.link && (
-              <Link className="flex items-center gap-x-2 text-sm" href={`${user?.link}`}>
+              <Link prefetch className="flex items-center gap-x-2 text-sm" href={`${user?.link}`}>
                 <FaLink className="text-gray-500" />
                 <span className="text-blue-500">{user?.link}</span>
               </Link>
@@ -143,10 +143,10 @@ const FoundedProfile = ({ user }: { user: User }) => {
               <span>Joined {new Date(`${user?.createdAt}`).toDateString()}</span>
             </p>
             <div className="flex items-center gap-x-2">
-              <Link className="text-sm hover:underline" href="/">
+              <Link prefetch className="text-sm hover:underline" href="/">
                 {user?.following.length} <span className="text-gray-500">Following</span>
               </Link>
-              <Link className="text-sm hover:underline" href="/">
+              <Link prefetch className="text-sm hover:underline" href="/">
                 {user?.followers.length} <span className="text-gray-500">{user?.followers.length === 1 ? "follower" : "followers"}</span>
               </Link>
             </div>

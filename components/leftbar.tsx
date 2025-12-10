@@ -40,7 +40,7 @@ const Leftbar = () => {
             <GoHomeFill className="text-2xl" />
             <span className="hidden xl:inline-block">Home</span>
           </a>
-          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href="/notifications">
+          <Link prefetch className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href="/notifications">
             <div className="relative">
               <FaBell className="text-2xl" />
               {notifications && notifications?.all !== 0 && (
@@ -51,7 +51,7 @@ const Leftbar = () => {
             </div>
             <span className="hidden xl:inline-block">Notifications</span>
           </Link>
-          <Link className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
+          <Link prefetch className="block xl:inline-flex items-center gap-x-5 p-3 text-xl rounded-full hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
             <FaUser className="text-2xl" />
             <span className="hidden xl:inline-block">Profile</span>
           </Link>

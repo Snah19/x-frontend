@@ -54,14 +54,14 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
               <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
             </figure>
           </button>
-          <Link className="block text-base font-bold" href="#">{sessionUser?.fullname}</Link>
+          <Link prefetch className="block text-base font-bold" href="#">{sessionUser?.fullname}</Link>
           <p className="mb-2 text-sm text-gray-500">@{sessionUser?.username}</p>
         <div className="mb-4 space-x-4">
-          <Link className="space-x-2 text-sm hover:underline" href="#">
+          <Link prefetch className="space-x-2 text-sm hover:underline" href="#">
             {sessionUser?.following?.length}
             <span className="text-gray-500"> Following</span>
           </Link>
-          <Link className="space-x-2 text-sm hover:underline" href="#">
+          <Link prefetch className="space-x-2 text-sm hover:underline" href="#">
             {sessionUser?.followers?.length}
             <span className="text-gray-500"> Followers</span>
           </Link>
@@ -69,11 +69,11 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
         </div>
 
         <div className="flex-1 flex flex-col">
-          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href="/">
+          <Link prefetch className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href="/">
             <GoHomeFill className="text-2xl"/>
             <span>Home</span>
           </Link>
-          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href="/notifications">
+          <Link prefetch className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href="/notifications">
             <div className="relative">
               <FaBell className="text-2xl" />
               {notifications && notifications?.all !== 0 && (
@@ -84,7 +84,7 @@ const MobileSidebar = ({ setIsMobileSidebarOpen }: MobileSidebarProps) => {
             </div>
             <span>Notifications</span>
           </Link>
-          <Link className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
+          <Link prefetch className="flex items-center gap-x-5 py-3 px-4 text-xl hover:bg-gray-700" href={`/profile/${sessionUser?.username}`}>
             <FaUser className="text-2xl"/>
             <span>Profile</span>
           </Link>

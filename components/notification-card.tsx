@@ -48,7 +48,7 @@ const NotificationCard = ({ notification }: { notification: Notification }) => {
   const { markNotificationAsRead } = useMarkNotificationAsRead();
 
   return (
-    <Link className={`flex gap-x-2 p-2 border-b border-gray-700 ${notification?.read === false && "bg-gray-950"}`} href={postId ? `/${notification?.to?.username}/status/${notification?.post?._id}` : `/profile/${notification?.from?.username}?tab=posts`} onClick={() => markNotificationAsRead({ notificationId: notification?._id })}>
+    <Link prefetch className={`flex gap-x-2 p-2 border-b border-gray-700 ${notification?.read === false && "bg-gray-950"}`} href={postId ? `/${notification?.to?.username}/status/${notification?.post?._id}` : `/profile/${notification?.from?.username}?tab=posts`} onClick={() => markNotificationAsRead({ notificationId: notification?._id })}>
       <div>
         {icon}
       </div>

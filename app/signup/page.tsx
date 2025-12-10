@@ -10,7 +10,7 @@ const SignUpPage = () => {
         <h1 className="text-2xl font-bold">Join today.</h1>
         <SignInForm />
         <p className="text-sm">Already have an account?</p>
-        <Link className="inline-block w-full py-2 text-lg text-center rounded-full border border-blue-400 hover:border-blue-500" href="/login">Sign in</Link>
+        <Link prefetch className="inline-block w-full py-2 text-lg text-center rounded-full border border-blue-400 hover:border-blue-500" href="/login">Sign in</Link>
       </div>
     </main>
   );

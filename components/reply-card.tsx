@@ -78,14 +78,14 @@ const ReplyCard = ({ reply }: { reply: Comment }) => {
     <div className="p-4 border-t border-gray-700">
       <div className="w-full">
         <div className="flex items-start gap-x-3 w-full">
-          <Link href={`/profile/${reply?.from?.username}?tab=posts`} onClick={(e) => e.stopPropagation()}>
+          <Link prefetch href={`/profile/${reply?.from?.username}?tab=posts`} onClick={(e) => e.stopPropagation()}>
             <figure className="relative w-7 h-7 rounded-full overflow-hidden">
               <Image className="object-cover" src={reply?.from?.profileImg?.url || userIcon.src} alt="" width={28} height={28} />
             </figure>
           </Link>
           <div className="w-full">
             <div>
-              <Link className="text-xs text-gray-500 hover:underline" href={`/profile/${reply?.from?.username}`}>@{reply?.from?.username}</Link>
+              <Link prefetch className="text-xs text-gray-500 hover:underline" href={`/profile/${reply?.from?.username}`}>@{reply?.from?.username}</Link>
               <span className="text-xs text-gray-500"> · {new Date(`${reply?.createdAt}`).toDateString()}</span>
               {isFollowing && <span className="text-xs text-blue-500"> <span className="text-gray-500"> · </span> Following</span>}
             </div>

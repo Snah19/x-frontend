@@ -121,14 +121,14 @@ const CommentCard = ({ post, comment }: { post: Post, comment: Comment }) => {
     <div className="p-4 border-b border-gray-700">
       <div className="w-full">
         <div className="flex items-start gap-x-3 w-full">
-          <Link href={`/profile/${comment?.from?.username}?tab=posts`} onClick={(e) => e.stopPropagation()}>
+          <Link prefetch href={`/profile/${comment?.from?.username}?tab=posts`} onClick={(e) => e.stopPropagation()}>
             <figure className="relative w-10 h-10 rounded-full overflow-hidden">
               <Image className="object-cover" src={comment?.from?.profileImg?.url || userIcon.src} alt="" width={40} height={40} />
             </figure>
           </Link>
           <div className="w-full">
             <div>
-              <Link className="text-xs text-gray-500 hover:underline" href={`/profile/${comment?.from?.username}`}>@{comment?.from?.username}</Link>
+              <Link prefetch className="text-xs text-gray-500 hover:underline" href={`/profile/${comment?.from?.username}`}>@{comment?.from?.username}</Link>
               <span className="text-xs text-gray-500"> · {new Date(`${comment?.createdAt}`).toDateString()}</span>
               {isFollowing && <span className="text-xs text-blue-500"> <span className="text-gray-500"> · </span> Following</span>}
             </div>

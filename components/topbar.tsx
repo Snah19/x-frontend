@@ -23,13 +23,13 @@ const Topbar = ({ sessionUser, feed } : { sessionUser: User, feed: string }) => 
                 <Image className="object-cover" src={sessionUser?.profileImg?.url || userIcon.src} alt="" width={32} height={32} />
               </figure>
             </button>
-            <Link href="/" className="transform -translate-x-1/2">
+            <Link prefetch href="/" className="transform -translate-x-1/2">
               <BsTwitterX className="text-2xl" />
             </Link>
             <div />
           </div>
           <div className="flex justify-between w-full border-b border-gray-700">
-            <Link className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href="/">
+            <Link prefetch className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href="/">
               <span>For you</span>
               {feed === "for-you" && (
                 <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
@@ -37,7 +37,7 @@ const Topbar = ({ sessionUser, feed } : { sessionUser: User, feed: string }) => 
                 </div>
               )}
             </Link>
-            <Link className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href="/?feed=following">
+            <Link prefetch className="relative flex-1 flex justify-center items-center py-4 text-sm font-bold hover:bg-gray-800" href="/?feed=following">
               <span>Following</span>
               {feed === "following" && (
                 <div className="absolute bottom-0 h-1 rounded-full bg-blue-500">
