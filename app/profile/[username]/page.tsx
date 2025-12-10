@@ -4,7 +4,7 @@ import ProfileContainer from "@/components/profile-container";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-const ProfilePage = async ({ params }: { params: { username: string } }) => {
+const ProfilePage = async ({ params }: { params: Promise<{ username: string }> }) => {
   const { username } = await params;
   const session = await getServerSession();
   

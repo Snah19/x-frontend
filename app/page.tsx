@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
-const HomePage = async ({ searchParams }: { searchParams: {feed: string } }) => {
+const HomePage = async ({ searchParams }: { searchParams: Promise<{feed: string }> }) => {
   const { feed } = await searchParams;
   const session = await getServerSession(authOptions);
 

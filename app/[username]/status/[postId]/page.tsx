@@ -4,7 +4,7 @@ import Rightbar from "@/components/rightbar";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-const StatusPage = async ({ params }: { params: { username: string, postId: string } }) => {
+const StatusPage = async ({ params }: { params: Promise<{ username: string, postId: string }> }) => {
   const { username , postId } = await params;
   const session = await getServerSession();
   
